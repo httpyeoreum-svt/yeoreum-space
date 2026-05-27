@@ -7,7 +7,7 @@ import { isAgeVerified } from "@/lib/age-verify";
 
 export default async function Home() {
   const [recent, grid, counts, ageVerified] = await Promise.all([
-    getRecentItems(6),
+    getRecentItems(14),
     getGridItems(6, 6),
     getCategoryCounts(),
     isAgeVerified(),

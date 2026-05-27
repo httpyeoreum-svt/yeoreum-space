@@ -18,7 +18,7 @@ export default async function CollectionPage() {
         <h1 className="font-serif text-[36px] sm:text-[40px] leading-none text-[color:var(--color-ink)]">
           Everything kept.
         </h1>
-        <p className="mt-3 text-xs text-[color:var(--color-ink-muted)] max-w-xl">
+        <p className="mt-3 text-xs text-[color:var(--color-ink-muted)] max-w-xs sm:max-w-md lg:max-w-none leading-relaxed">
           {items.length} entries across music, books, films, perfume, and games. Filter, sort, or scan.
         </p>
       </header>

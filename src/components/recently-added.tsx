@@ -18,8 +18,13 @@ export async function RecentlyAdded({ items }: { items: Item[] }) {
         </a>
       </div>
       <div className="scroll-x flex gap-4 pb-1">
-        {items.map((item) => (
-          <ItemCardLarge key={item.id} item={item} locked={item.ageLimit && !verified} />
+        {items.map((item, i) => (
+          <div
+            key={item.id}
+            className={i >= 6 ? "hidden lg:block" : "block"}
+          >
+            <ItemCardLarge item={item} locked={item.ageLimit && !verified} />
+          </div>
         ))}
       </div>
     </section>
