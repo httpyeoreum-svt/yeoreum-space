@@ -93,6 +93,10 @@ export async function MusicDetail({
         <TitleBlock item={item} meta={meta} />
         <div className="-mt-3">
         <MusicTabs
+          counts={{
+            liked: meta?.likedBy?.length ?? 0,
+            similar: similar.length,
+          }}
           trackInfo={
             <div className="flex flex-col">
               <TrackInfoTable item={item} meta={meta} />
@@ -678,27 +682,28 @@ function SimilarSongs({ items }: { items: Item[] }) {
   return (
     <section>
       <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Similar Songs</h3>
-      <div className="grid grid-cols-2 gap-3">
+      <ul className="flex flex-col divide-y divide-[color:var(--color-line)]/30">
         {items.map((s) => (
-          <Link
-            key={s.id}
-            href={`/items/${s.id}`}
-            className="group flex flex-col gap-2 p-2 border border-[color:var(--color-paper-edge)]/60 bg-[color:var(--color-paper)] transition hover:border-[color:var(--color-line)] hover:shadow-sm"
-          >
-            <div className="aspect-square w-full overflow-hidden">
-              <ImagePlaceholder category={s.category} id={s.id} imageUrl={s.imageUrl} />
-            </div>
-            <div className="min-w-0">
-              <p className="font-serif text-[14px] leading-tight text-[color:var(--color-ink)] line-clamp-2 group-hover:underline underline-offset-2">
-                {s.title}
-              </p>
-              <p className="text-[10px] text-[color:var(--color-ink-muted)] truncate mt-0.5">
-                {s.creator}
-              </p>
-            </div>
-          </Link>
+          <li key={s.id}>
+            <Link
+              href={`/items/${s.id}`}
+              className="group flex items-center gap-3 py-2.5 transition hover:bg-[color:var(--color-cream-soft)]/40 px-1"
+            >
+              <div className="w-12 h-12 shrink-0 overflow-hidden">
+                <ImagePlaceholder category={s.category} id={s.id} imageUrl={s.imageUrl} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-serif text-[14px] leading-tight text-[color:var(--color-ink)] truncate group-hover:underline underline-offset-2">
+                  {s.title}
+                </p>
+                <p className="font-serif text-[10px] text-[color:var(--color-ink-muted)] truncate mt-0.5">
+                  {s.creator}
+                </p>
+              </div>
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }
