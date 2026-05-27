@@ -19,7 +19,7 @@ export default async function Home() {
         src="/home-bg.png"
         alt=""
         aria-hidden
-        className="fixed bottom-0 left-0 lg:left-[260px] z-0 pointer-events-none h-screen w-auto select-none"
+        className="fixed bottom-0 left-0 lg:left-[260px] z-0 pointer-events-none h-lvh w-auto select-none will-change-transform opacity-60"
       />
       <div className="relative z-10">
         <RecentlyAdded items={recent} />
