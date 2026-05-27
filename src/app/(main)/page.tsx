@@ -14,9 +14,18 @@ export default async function Home() {
   ]);
   return (
     <>
-      <RecentlyAdded items={recent} />
-      <MoodBar />
-      <CategoryGrid items={grid} counts={counts} ageVerified={ageVerified} />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/home-bg.png"
+        alt=""
+        aria-hidden
+        className="fixed bottom-0 left-0 lg:left-[260px] z-0 pointer-events-none h-screen w-auto select-none"
+      />
+      <div className="relative z-10">
+        <RecentlyAdded items={recent} />
+        <MoodBar />
+        <CategoryGrid items={grid} counts={counts} ageVerified={ageVerified} />
+      </div>
     </>
   );
 }
