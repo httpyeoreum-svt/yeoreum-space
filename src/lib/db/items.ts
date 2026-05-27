@@ -31,8 +31,14 @@ export const getItemById = cache(
 
 export const getRecentItems = cache(
   async (limit = 6): Promise<Item[]> => {
-    const all = await getAllItems();
-    return all.slice(0, limit);
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("items")
+      .select(ITEM_SELECT)
+      .order("updated_at", { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    return (data ?? []).map(rowToItem);
   },
 );
 
