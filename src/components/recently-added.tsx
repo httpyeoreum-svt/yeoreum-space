@@ -17,11 +17,11 @@ export async function RecentlyAdded({ items }: { items: Item[] }) {
           <ArrowRight size={11} strokeWidth={1.5} />
         </a>
       </div>
-      <div className="scroll-x flex gap-4 pb-1">
+      <div className="scroll-x flex gap-4 pb-1 items-start">
         {items.map((item, i) => (
           <div
             key={item.id}
-            className={i >= 6 ? "hidden lg:block" : "block"}
+            className={`flex-none w-[110px] ${i >= 6 ? "hidden lg:block" : "block"}`}
           >
             <ItemCardLarge item={item} locked={item.ageLimit && !verified} />
           </div>
