@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Surface */
+  --color-cream: #ece5cf;
+  --color-cream-deep: #e3dab9;
+  --color-cream-soft: #efe9d6;
+  --color-paper: #faf6e9;
+  --color-paper-edge: #ddd1b0;
+
+  /* Text */
+  --color-ink: #1a1714;
+  --color-ink-muted: #6b6357;
+  --color-ink-soft: #8c8472;
+
+  /* Lines */
+  --color-line: #cdc1a3;
+  --color-line-soft: #ddd2b4;
+
+  /* Category accents */
+  --color-cat-music: #7c2d2d;
+  --color-cat-books: #436b3a;
+  --color-cat-films: #2d4a6e;
+  --color-cat-perfume: #8b5a2b;
+  --color-cat-games: #3a3a3a;
+
+  /* Mood chip colors */
+  --color-mood-night: #1a1a1a;
+  --color-mood-sweet: #c89d9d;
+  --color-mood-rain: #a8b4c2;
+  --color-mood-lonely: #b8b3a8;
+  --color-mood-bright: #c8b078;
+  --color-mood-summer: #87966b;
+  --color-mood-soft: #a1a98a;
+
+  /* Fonts */
+  --font-serif: var(--font-serif-var);
+  --font-mono: var(--font-mono-var);
+}
+
+/*
+ * Mood + category color variables are referenced from inline styles, so Tailwind v4
+ * tree-shakes them out of the compiled CSS. Redeclare on :root to keep them available.
+ */
+:root {
+  --color-mood-night:  #1a1a1a;
+  --color-mood-sweet:  #c89d9d;
+  --color-mood-rain:   #a8b4c2;
+  --color-mood-lonely: #b8b3a8;
+  --color-mood-bright: #c8b078;
+  --color-mood-summer: #87966b;
+  --color-mood-soft:   #a1a98a;
+
+  --color-cat-music:   #7c2d2d;
+  --color-cat-books:   #436b3a;
+  --color-cat-films:   #2d4a6e;
+  --color-cat-perfume: #8b5a2b;
+  --color-cat-games:   #3a3a3a;
+}
+
+html, body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+
+/* Subtle paper texture (optional, low-cost) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.35;
+  background-image:
+    radial-gradient(rgba(120, 100, 60, 0.04) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+/* Card notch — perforated bottom-center for small cards */
+.card-notch {
+  position: relative;
+}
+.card-notch::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 12px;
+  height: 12px;
+  background: var(--color-cream);
+  border: 1px solid var(--color-paper-edge);
+  border-radius: 9999px;
+  transform: translateX(-50%);
+}
+
+/* Horizontal scroll hiding scrollbar */
+.scroll-x {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
