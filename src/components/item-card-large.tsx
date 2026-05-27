@@ -22,7 +22,7 @@ export function ItemCardLarge({ item, locked }: { item: Item; locked?: boolean }
           </div>
         )}
       </div>
-      <div className="mt-1.5 space-y-0.5">
+      <div className="mt-0.5 space-y-0.5">
         <CategoryLabel category={item.category} className="!text-[7px] !tracking-[0.15em]" />
         <h3 className="font-serif text-[12px] leading-tight tracking-tight text-[color:var(--color-ink)] truncate group-hover:underline underline-offset-2">
           {locked ? "— age restricted —" : item.title}

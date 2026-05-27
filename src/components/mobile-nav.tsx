@@ -63,7 +63,7 @@ export function MobileNav() {
             <button
               onClick={() => setOpen(false)}
               aria-label="close menu"
-              className="absolute top-3 left-3 z-10 w-9 h-9 flex items-center justify-center bg-[color:var(--color-paper)] border border-[color:var(--color-line)] hover:bg-[color:var(--color-cream-soft)] transition"
+              className="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center bg-[color:var(--color-paper)] border border-[color:var(--color-line)] hover:bg-[color:var(--color-cream-soft)] transition"
             >
               <X size={15} strokeWidth={1.5} className="text-[color:var(--color-ink)]" />
             </button>

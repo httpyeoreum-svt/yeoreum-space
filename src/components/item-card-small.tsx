@@ -37,7 +37,7 @@ export function ItemCardSmall({ item, locked }: { item: Item; locked?: boolean }
         <h3 className="font-serif text-[14px] leading-tight tracking-tight text-[color:var(--color-ink)] truncate">
           {locked ? "— age restricted —" : item.title}
         </h3>
-        <p className="text-[10px] text-[color:var(--color-ink-muted)] mt-0.5 truncate">
+        <p className="font-serif text-[10px] text-[color:var(--color-ink-muted)] mt-0.5 truncate">
           {locked ? "" : item.creator}
         </p>
       </div>
