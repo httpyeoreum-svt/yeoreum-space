@@ -123,6 +123,10 @@ export type AudioFeatures = {
 export type BooksMeta = {
   category: "books";
   publisher?: string;
+  /** Publication date as written. Accepts yyyy or yyyy-mm-dd. */
+  releaseDate?: string;
+  genre?: string;
+  /** @deprecated — superseded by releaseDate. Kept for legacy rows. */
   year?: number;
 };
 
