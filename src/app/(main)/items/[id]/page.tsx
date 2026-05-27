@@ -38,7 +38,7 @@ export default async function ItemPage({
     idx >= 0 && idx < allInCategory.length - 1 ? allInCategory[idx + 1] : null;
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain">
+    <div className="flex-1 min-h-0 overflow-y-auto overscroll-y-none">
       <div className="px-4 sm:px-6 md:px-8 pt-3 pb-1 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
         <Link
           href="/"
