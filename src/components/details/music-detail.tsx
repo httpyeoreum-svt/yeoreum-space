@@ -65,6 +65,7 @@ export async function MusicDetail({
       <div className="lg:hidden flex flex-col gap-4 px-4 pt-2 pb-[88px]">
         <YouTubeEmbed url={meta?.mvUrl} title={item.title} />
         <TitleBlock item={item} />
+        <div className="-mt-3">
         <MusicTabs
           trackInfo={
             <div className="flex flex-col gap-4">
@@ -141,19 +142,20 @@ export async function MusicDetail({
             )
           }
         />
+        </div>{/* end MusicTabs wrapper (negative top margin) */}
         {hasSamples && (
-          <div className="fixed bottom-0 left-0 right-0 z-30 bg-[color:var(--color-cream)] border-t border-[color:var(--color-line)]/50 px-3 py-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
-            <div className="flex gap-1.5 overflow-x-auto snap-x snap-mandatory scroll-x">
-              {meta!.samples!.slice(0, 4).map((url, i) => (
+          <div className="fixed bottom-0 left-0 right-0 z-30 bg-[color:var(--color-cream)] border-t border-[color:var(--color-line)]/50 px-3 py-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+            <div className="flex gap-1.5 w-max animate-[marquee_25s_linear_infinite]">
+              {[...meta!.samples!.slice(0, 4), ...meta!.samples!.slice(0, 4)].map((url, i) => (
                 <div
                   key={i}
                   style={{ width: "110px", height: "62px" }}
-                  className="shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60 snap-center"
+                  className="shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
-                    alt={`Sample ${i + 1}`}
+                    alt=""
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />

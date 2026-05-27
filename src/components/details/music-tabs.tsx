@@ -32,7 +32,7 @@ export function MusicTabs({
             key={t.key}
             type="button"
             onClick={() => setTab(t.key)}
-            className={`flex-1 px-2 py-2.5 text-[10px] tracking-[0.2em] transition border-b-2 -mb-px ${
+            className={`flex-1 px-2 py-2.5 text-[10px] tracking-[0.2em] transition border-b-2 -mb-px touch-manipulation active:bg-[color:var(--color-cream-soft)] active:scale-[0.97] ${
               tab === t.key
                 ? "border-[color:var(--color-ink)] text-[color:var(--color-ink)]"
                 : "border-transparent text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)]"
@@ -42,7 +42,7 @@ export function MusicTabs({
           </button>
         ))}
       </div>
-      <div className="pt-4">
+      <div key={tab} className="pt-4 animate-[fadeIn_180ms_ease-out]">
         {tab === "info" && trackInfo}
         {tab === "cover" && cover}
         {tab === "liked" && liked}
