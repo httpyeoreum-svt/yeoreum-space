@@ -11,26 +11,26 @@ import { formatCardDate } from "@/lib/format";
  */
 export function ItemCardLarge({ item, locked }: { item: Item; locked?: boolean }) {
   return (
-    <Link href={`/items/${item.id}`} className="flex-none w-[140px] group">
+    <Link href={`/items/${item.id}`} className="flex-none w-[110px] group">
       <div className="aspect-[4/5] w-full overflow-hidden border border-transparent group-hover:border-[color:var(--color-line)] transition relative">
         <div className={locked ? "w-full h-full blur-xl scale-110" : "w-full h-full"}>
           <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
         </div>
         {locked && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-            <Lock size={22} strokeWidth={1.5} className="text-white drop-shadow" />
+            <Lock size={20} strokeWidth={1.5} className="text-white drop-shadow" />
           </div>
         )}
       </div>
-      <div className="mt-2 space-y-0.5">
-        <CategoryLabel category={item.category} />
-        <h3 className="font-serif text-[15px] leading-tight tracking-tight text-[color:var(--color-ink)] line-clamp-1 group-hover:underline underline-offset-2">
+      <div className="mt-1.5 space-y-0.5">
+        <CategoryLabel category={item.category} className="!text-[7px] !tracking-[0.15em]" />
+        <h3 className="font-serif text-[12px] leading-tight tracking-tight text-[color:var(--color-ink)] truncate group-hover:underline underline-offset-2">
           {locked ? "— age restricted —" : item.title}
         </h3>
-        <p className="text-[10px] text-[color:var(--color-ink-muted)] line-clamp-1">
+        <p className="text-[9px] text-[color:var(--color-ink-muted)] truncate">
           {locked ? "" : item.creator}
         </p>
-        <p className="text-[9px] tracking-[0.2em] text-[color:var(--color-ink-soft)] pt-0.5">
+        <p className="text-[8px] tracking-[0.2em] text-[color:var(--color-ink-soft)] pt-0.5">
           {locked ? "" : formatCardDate(item.addedAt)}
         </p>
       </div>

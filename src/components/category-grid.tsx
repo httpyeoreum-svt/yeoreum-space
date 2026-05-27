@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { LayoutGrid, List, ChevronDown } from "lucide-react";
 import type { Item, Category } from "@/lib/types";
 import type { CategoryCounts } from "@/lib/db/category-counts";
 import { ItemCardSmall } from "./item-card-small";
+import { ImagePlaceholder } from "./image-placeholder";
+import { CategoryLabel } from "./category-label";
 
 type Tab = "all" | Category;
 
@@ -90,21 +93,46 @@ export function CategoryGrid({
       </div>
 
       <div className="bg-[color:var(--color-cream-soft)]/50 border border-[color:var(--color-line)]/40 p-4">
-        <div
-          className={
-            view === "grid"
-              ? "grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
-              : "flex flex-col gap-2"
-          }
-        >
-          {filtered.map((item) => (
-            <ItemCardSmall
-              key={item.id}
-              item={item}
-              locked={item.ageLimit && !ageVerified}
-            />
-          ))}
-        </div>
+        {view === "grid" ? (
+          <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            {filtered.map((item) => (
+              <ItemCardSmall
+                key={item.id}
+                item={item}
+                locked={item.ageLimit && !ageVerified}
+              />
+            ))}
+          </div>
+        ) : (
+          <ul className="flex flex-col divide-y divide-[color:var(--color-line)]/30">
+            {filtered.map((item) => {
+              const locked = item.ageLimit && !ageVerified;
+              return (
+                <li key={item.id}>
+                  <Link
+                    href={`/items/${item.id}`}
+                    className="group flex items-center gap-3 py-2.5 hover:bg-[color:var(--color-cream-soft)]/50 transition px-1"
+                  >
+                    <div className="w-12 h-12 shrink-0 overflow-hidden">
+                      <div className={locked ? "w-full h-full blur-xl scale-110" : "w-full h-full"}>
+                        <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-serif text-[14px] leading-tight text-[color:var(--color-ink)] truncate group-hover:underline underline-offset-2">
+                        {locked ? "— age restricted —" : item.title}
+                      </p>
+                      <p className="text-[10px] text-[color:var(--color-ink-muted)] truncate mt-0.5">
+                        {locked ? "" : item.creator}
+                      </p>
+                    </div>
+                    <CategoryLabel category={item.category} className="!text-[8px] !tracking-[0.15em] shrink-0" />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </section>
   );

@@ -17,7 +17,7 @@ export async function RecentlyAdded({ items }: { items: Item[] }) {
           <ArrowRight size={11} strokeWidth={1.5} />
         </a>
       </div>
-      <div className="scroll-x flex gap-4 -mx-6 px-6 pb-1">
+      <div className="scroll-x flex gap-4 pb-1">
         {items.map((item) => (
           <ItemCardLarge key={item.id} item={item} locked={item.ageLimit && !verified} />
         ))}

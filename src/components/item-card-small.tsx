@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { ChevronRight, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import type { Item } from "@/lib/types";
 import { ImagePlaceholder } from "./image-placeholder";
 import { CategoryLabel } from "./category-label";
-import { formatCardDate } from "@/lib/format";
 
 /**
  * Small "collectible" card used in the lower category grid.
@@ -19,10 +18,10 @@ export function ItemCardSmall({ item, locked }: { item: Item; locked?: boolean }
       className="card-notch group relative block bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)]/60 p-2.5 transition hover:shadow-sm hover:border-[color:var(--color-line)]"
     >
       <header className="flex items-center justify-between pb-1.5">
-        <span className="text-[9px] tracking-[0.2em] text-[color:var(--color-ink-soft)]">
+        <span className="text-[8px] tracking-[0.2em] text-[color:var(--color-ink-soft)]">
           {locked ? "—" : item.id}
         </span>
-        <CategoryLabel category={item.category} />
+        <CategoryLabel category={item.category} className="!text-[7px] !tracking-[0.15em]" />
       </header>
       <div className="aspect-square w-full overflow-hidden relative">
         <div className={locked ? "w-full h-full blur-xl scale-110" : "w-full h-full"}>
@@ -34,20 +33,14 @@ export function ItemCardSmall({ item, locked }: { item: Item; locked?: boolean }
           </div>
         )}
       </div>
-      <div className="pt-2">
-        <h3 className="font-serif text-[14px] leading-tight tracking-tight text-[color:var(--color-ink)] line-clamp-2 min-h-[2.4rem]">
+      <div className="pt-2 min-w-0">
+        <h3 className="font-serif text-[14px] leading-tight tracking-tight text-[color:var(--color-ink)] truncate">
           {locked ? "— age restricted —" : item.title}
         </h3>
-        <p className="text-[10px] text-[color:var(--color-ink-muted)] mt-0.5 line-clamp-1">
+        <p className="text-[10px] text-[color:var(--color-ink-muted)] mt-0.5 truncate">
           {locked ? "" : item.creator}
         </p>
       </div>
-      <footer className="mt-2 pt-1.5 border-t border-dashed border-[color:var(--color-paper-edge)] flex items-center justify-between">
-        <p className="text-[8px] tracking-[0.2em] text-[color:var(--color-ink-soft)]">
-          {locked ? "" : `Added  ${formatCardDate(item.addedAt)}`}
-        </p>
-        <ChevronRight size={12} className="text-[color:var(--color-ink-soft)] group-hover:text-[color:var(--color-ink)] transition" />
-      </footer>
     </Link>
   );
 }

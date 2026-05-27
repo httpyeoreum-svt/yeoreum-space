@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Play, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import type {
   Item,
   LikedByPerson,
@@ -134,7 +134,7 @@ export async function MusicDetail({
           }
           similar={
             similar.length > 0 ? (
-              <SimilarSongs items={similar} allMoods={allMoods} />
+              <SimilarSongs items={similar} />
             ) : (
               <p className="text-[12px] text-[color:var(--color-ink-soft)]">
                 No similar songs yet.
@@ -245,7 +245,7 @@ export async function MusicDetail({
                       memberMap={memberMap}
                     />
                   )}
-                  {similar.length > 0 && <SimilarSongs items={similar} allMoods={allMoods} />}
+                  {similar.length > 0 && <SimilarSongs items={similar} />}
                 </div>
               )}
             </div>
@@ -358,8 +358,6 @@ function FactBox({ label, value }: { label: string; value: string }) {
 
 function TrackInfoTable({ item, meta }: { item: Item; meta?: MusicMeta }) {
   const releaseDate = meta?.releaseDate ? formatCardDate(meta.releaseDate) : undefined;
-  const length = meta?.length;
-  const showReleaseLength = Boolean(releaseDate || length);
 
   const otherRows: InfoRow[] = [
     { label: "Album",   value: meta?.album },
@@ -380,28 +378,12 @@ function TrackInfoTable({ item, meta }: { item: Item; meta?: MusicMeta }) {
             <dd className="text-[color:var(--color-ink)] break-words">{meta.album}</dd>
           </div>
         )}
-        {showReleaseLength &&
-          (releaseDate && length ? (
-            <div className="grid grid-cols-[1fr_auto] gap-x-4 py-1.5">
-              <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 border-b border-[color:var(--color-line)]/30 pb-1.5">
-                <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Release</dt>
-                <dd className="text-[color:var(--color-ink)]">{releaseDate}</dd>
-              </div>
-              <div className="flex items-baseline gap-x-1.5 border-b border-[color:var(--color-line)]/30 pb-1.5">
-                <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Length</dt>
-                <dd className="text-[color:var(--color-ink)]">{length}</dd>
-              </div>
-            </div>
-          ) : (
-            <div className={rowCls}>
-              <dt className="text-[color:var(--color-ink-soft)] tracking-wide">
-                {releaseDate ? "Release" : "Length"}
-              </dt>
-              <dd className="text-[color:var(--color-ink)]">
-                {releaseDate ?? length}
-              </dd>
-            </div>
-          ))}
+        {releaseDate && (
+          <div className={rowCls}>
+            <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Release</dt>
+            <dd className="text-[color:var(--color-ink)]">{releaseDate}</dd>
+          </div>
+        )}
         {otherRows
           .filter((r) => r.label !== "Album")
           .map((r) => (
@@ -658,47 +640,31 @@ function InlineMember({ name, avatarUrl }: { name: string; avatarUrl?: string })
   );
 }
 
-function SimilarSongs({ items, allMoods }: { items: Item[]; allMoods: Mood[] }) {
+function SimilarSongs({ items }: { items: Item[] }) {
   return (
     <section>
       <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Similar Songs</h3>
-      <ul className="flex flex-col">
+      <div className="grid grid-cols-2 gap-3">
         {items.map((s) => (
-          <li
+          <Link
             key={s.id}
-            className="group flex items-center gap-3 py-2.5 border-b border-[color:var(--color-line)]/30 last:border-b-0 hover:bg-[color:var(--color-cream-soft)]/50 transition px-1"
+            href={`/items/${s.id}`}
+            className="group flex flex-col gap-2 p-2 border border-[color:var(--color-paper-edge)]/60 bg-[color:var(--color-paper)] transition hover:border-[color:var(--color-line)] hover:shadow-sm"
           >
-            <Link
-              href={`/items/${s.id}`}
-              className="flex-1 flex items-center gap-3 min-w-0"
-            >
-              <div className="w-11 h-11 shrink-0 overflow-hidden">
-                <ImagePlaceholder category={s.category} id={s.id} imageUrl={s.imageUrl} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-serif text-[14px] leading-tight text-[color:var(--color-ink)] truncate group-hover:underline underline-offset-2">
-                  {s.title}
-                </p>
-                <p className="text-[10px] text-[color:var(--color-ink-muted)] truncate">
-                  {s.creator}
-                </p>
-              </div>
-            </Link>
-            <div className="hidden @md:flex items-center gap-1 shrink-0">
-              {s.moods.slice(0, 2).map((slug) => {
-                const m = allMoods.find((x) => x.slug === slug);
-                return m ? <MoodChip key={slug} mood={m} size="sm" /> : null;
-              })}
+            <div className="aspect-square w-full overflow-hidden">
+              <ImagePlaceholder category={s.category} id={s.id} imageUrl={s.imageUrl} />
             </div>
-            <span
-              aria-hidden
-              className="shrink-0 w-8 h-8 rounded-full border border-[color:var(--color-line)] flex items-center justify-center text-[color:var(--color-ink)]"
-            >
-              <Play size={11} className="ml-0.5" />
-            </span>
-          </li>
+            <div className="min-w-0">
+              <p className="font-serif text-[14px] leading-tight text-[color:var(--color-ink)] line-clamp-2 group-hover:underline underline-offset-2">
+                {s.title}
+              </p>
+              <p className="text-[10px] text-[color:var(--color-ink-muted)] truncate mt-0.5">
+                {s.creator}
+              </p>
+            </div>
+          </Link>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

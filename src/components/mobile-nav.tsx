@@ -26,7 +26,7 @@ export function MobileNav() {
 
   return (
     <>
-      <header className="lg:hidden flex items-center justify-between px-5 py-4 border-b border-[color:var(--color-line)]/50 bg-[color:var(--color-cream)] shrink-0">
+      <header className="lg:hidden sticky top-0 z-20 flex items-center justify-between px-5 py-4 border-b border-[color:var(--color-line)]/50 bg-[color:var(--color-cream)] shrink-0">
         <h1 className="font-serif text-2xl italic text-[color:var(--color-ink)]">
           yeoreum space
         </h1>
