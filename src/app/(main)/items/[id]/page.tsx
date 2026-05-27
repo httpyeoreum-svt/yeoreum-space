@@ -37,7 +37,8 @@ export default async function ItemPage({
           className="inline-flex items-center gap-2 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)] transition"
         >
           <ArrowLeft size={12} strokeWidth={1.5} />
-          BACK TO COLLECTION
+          <span className="lg:hidden">BACK</span>
+          <span className="hidden lg:inline">BACK TO COLLECTION</span>
         </Link>
         <p className="text-[10px] tracking-[0.3em]">
           <span style={{ color: categoryMeta.accentVar }} className="font-medium">

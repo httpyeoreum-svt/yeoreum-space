@@ -3,8 +3,9 @@
 import { useState, type ReactNode } from "react";
 
 const TABS = [
-  { key: "info", label: "Track Info" },
-  { key: "cover", label: "Cover & Liked" },
+  { key: "info", label: "Info" },
+  { key: "cover", label: "Cover" },
+  { key: "liked", label: "Liked" },
   { key: "similar", label: "Similar" },
 ] as const;
 
@@ -12,11 +13,13 @@ type TabKey = (typeof TABS)[number]["key"];
 
 export function MusicTabs({
   trackInfo,
-  coverLiked,
+  cover,
+  liked,
   similar,
 }: {
   trackInfo: ReactNode;
-  coverLiked: ReactNode;
+  cover: ReactNode;
+  liked: ReactNode;
   similar: ReactNode;
 }) {
   const [tab, setTab] = useState<TabKey>("info");
@@ -41,7 +44,8 @@ export function MusicTabs({
       </div>
       <div className="pt-4">
         {tab === "info" && trackInfo}
-        {tab === "cover" && coverLiked}
+        {tab === "cover" && cover}
+        {tab === "liked" && liked}
         {tab === "similar" && similar}
       </div>
     </div>

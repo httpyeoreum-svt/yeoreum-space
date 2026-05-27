@@ -105,29 +105,32 @@ export async function MusicDetail({
               {item.note && <NotesBlock note={item.note} date={item.addedAt} />}
             </div>
           }
-          coverLiked={
-            <div className="flex flex-col gap-6">
-              {hasCover && (
-                <CoverSection
-                  videoUrl={meta?.cover?.videoUrl}
-                  members={meta?.cover?.members}
-                  memberMap={memberMap}
-                />
-              )}
-              {hasLiked && (
-                <LikedBy
-                  people={meta!.likedBy!}
-                  group={meta?.likedByGroup}
-                  url={meta?.playlistNoteUrl}
-                  memberMap={memberMap}
-                />
-              )}
-              {!hasCover && !hasLiked && (
-                <p className="text-[12px] text-[color:var(--color-ink-soft)]">
-                  No cover or liked-by data.
-                </p>
-              )}
-            </div>
+          cover={
+            hasCover ? (
+              <CoverSection
+                videoUrl={meta?.cover?.videoUrl}
+                members={meta?.cover?.members}
+                memberMap={memberMap}
+              />
+            ) : (
+              <p className="text-[12px] text-[color:var(--color-ink-soft)]">
+                No cover data.
+              </p>
+            )
+          }
+          liked={
+            hasLiked ? (
+              <LikedBy
+                people={meta!.likedBy!}
+                group={meta?.likedByGroup}
+                url={meta?.playlistNoteUrl}
+                memberMap={memberMap}
+              />
+            ) : (
+              <p className="text-[12px] text-[color:var(--color-ink-soft)]">
+                No liked-by data.
+              </p>
+            )
           }
           similar={
             similar.length > 0 ? (
@@ -286,18 +289,13 @@ function TitleBlock({ item }: { item: Item }) {
   return (
     <div className="pb-1 border-b border-[color:var(--color-line)]/50">
       {/* Mobile/Tablet (<lg): Title + Creator + Katakana on one line, with spacing. */}
-      <div className="flex items-baseline gap-x-6 gap-y-2 flex-wrap lg:block">
+      <div className="flex items-baseline gap-x-4 gap-y-1 flex-wrap lg:block">
         <h2 className="font-serif text-[28px] @md:text-[36px] @xl:text-[44px] leading-[1.05] tracking-tight text-[color:var(--color-ink)] break-words">
           {item.title}
         </h2>
-        <p className="lg:hidden font-serif text-[16px] @md:text-[20px] text-[color:var(--color-ink-muted)] break-words ml-2 lg:ml-0">
+        <p className="lg:hidden font-serif text-[13px] @md:text-[16px] text-[color:var(--color-ink-muted)] break-words">
           {item.creator}
         </p>
-        {hasKatakana && (
-          <span className="lg:hidden text-[11px] @md:text-[13px] text-[color:var(--color-ink-soft)] tracking-wide ml-2 lg:ml-0">
-            {item.creatorKatakana}
-          </span>
-        )}
       </div>
       {hasSubtitle && (
         <p className="font-serif text-[18px] @md:text-[22px] text-[color:var(--color-ink-muted)] leading-tight mt-1 break-words">
@@ -382,29 +380,28 @@ function TrackInfoTable({ item, meta }: { item: Item; meta?: MusicMeta }) {
             <dd className="text-[color:var(--color-ink)] break-words">{meta.album}</dd>
           </div>
         )}
-        {showReleaseLength && (
-          <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5">
-            <dt className="text-[color:var(--color-ink-soft)] tracking-wide">
-              {releaseDate ? "Release Date" : "Length"}
-            </dt>
-            <dd className="text-[color:var(--color-ink)] flex items-baseline gap-x-4">
-              {releaseDate && (
-                <span className="border-b border-[color:var(--color-line)]/30 pb-1 flex-1 min-w-0">
-                  {releaseDate}
-                </span>
-              )}
-              {releaseDate && length && (
-                <span className="inline-flex items-baseline gap-1.5 flex-1 min-w-0">
-                  <span className="text-[color:var(--color-ink-soft)] tracking-wide shrink-0">Length</span>
-                  <span className="border-b border-[color:var(--color-line)]/30 pb-1 flex-1">{length}</span>
-                </span>
-              )}
-              {!releaseDate && length && (
-                <span className="border-b border-[color:var(--color-line)]/30 pb-1 flex-1 min-w-0">{length}</span>
-              )}
-            </dd>
-          </div>
-        )}
+        {showReleaseLength &&
+          (releaseDate && length ? (
+            <div className="grid grid-cols-[1fr_auto] gap-x-4 py-1.5">
+              <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 border-b border-[color:var(--color-line)]/30 pb-1.5">
+                <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Release</dt>
+                <dd className="text-[color:var(--color-ink)]">{releaseDate}</dd>
+              </div>
+              <div className="flex items-baseline gap-x-1.5 border-b border-[color:var(--color-line)]/30 pb-1.5">
+                <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Length</dt>
+                <dd className="text-[color:var(--color-ink)]">{length}</dd>
+              </div>
+            </div>
+          ) : (
+            <div className={rowCls}>
+              <dt className="text-[color:var(--color-ink-soft)] tracking-wide">
+                {releaseDate ? "Release" : "Length"}
+              </dt>
+              <dd className="text-[color:var(--color-ink)]">
+                {releaseDate ?? length}
+              </dd>
+            </div>
+          ))}
         {otherRows
           .filter((r) => r.label !== "Album")
           .map((r) => (
