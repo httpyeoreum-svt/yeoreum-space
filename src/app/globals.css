@@ -116,3 +116,70 @@ body::before {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
+
+/* WYSIWYG post content styling — keeps the paper aesthetic. */
+.post-content > * + * { margin-top: 1em; }
+.post-content h1 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  line-height: 1.15;
+  margin-top: 1.6em;
+  margin-bottom: 0.4em;
+}
+.post-content h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-top: 1.5em;
+  margin-bottom: 0.4em;
+}
+.post-content h3 {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  line-height: 1.25;
+  margin-top: 1.4em;
+  margin-bottom: 0.4em;
+}
+.post-content p { line-height: 1.7; }
+.post-content a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--color-line);
+  transition: text-decoration-color 120ms;
+}
+.post-content a:hover { text-decoration-color: var(--color-ink); }
+.post-content strong { font-weight: 600; }
+.post-content em { font-style: italic; }
+.post-content ul, .post-content ol { padding-left: 1.5em; }
+.post-content ul { list-style: disc; }
+.post-content ol { list-style: decimal; }
+.post-content li + li { margin-top: 0.25em; }
+.post-content blockquote {
+  border-left: 2px solid var(--color-line);
+  padding-left: 1em;
+  color: var(--color-ink-muted);
+  font-style: italic;
+}
+.post-content code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-paper);
+  padding: 0.1em 0.35em;
+  border: 1px solid color-mix(in srgb, var(--color-paper-edge) 60%, transparent);
+}
+.post-content pre {
+  font-family: var(--font-mono);
+  background: var(--color-paper);
+  border: 1px solid color-mix(in srgb, var(--color-paper-edge) 60%, transparent);
+  padding: 0.9em;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+.post-content pre code { background: transparent; border: 0; padding: 0; }
+.post-content img { max-width: 100%; height: auto; }
+.post-content hr {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  margin: 2em 0;
+}

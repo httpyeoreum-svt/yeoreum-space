@@ -170,3 +170,25 @@ export type Item = {
   /** True ⇒ blurred on lists and gated on detail until the viewer unlocks age. */
   ageLimit?: boolean;
 };
+
+// ============================================================================
+// Posts (blog)
+// ============================================================================
+
+export type PostStatus = "draft" | "published";
+
+export type Post = {
+  slug: string;
+  title: string;
+  /** Rich HTML produced by the WYSIWYG editor on the admin side. */
+  content: string;
+  excerpt?: string;
+  coverImage?: string;
+  status: PostStatus;
+  publishedAt?: string;
+  tags: string[];
+  /** IDs of related catalog items (music/books/films/perfume/games). */
+  relatedItemIds: string[];
+  createdAt: string;
+  updatedAt: string;
+};
