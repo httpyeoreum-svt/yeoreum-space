@@ -24,13 +24,15 @@ function rowToPost(row: Record<string, unknown>): Post {
   };
 }
 
-/** Public-facing: only published posts, ordered newest published first. */
+/** Public-facing: only published posts whose published_at has arrived, newest first. */
 export const getPublishedPosts = cache(async (): Promise<Post[]> => {
   const supabase = await createClient();
+  const nowIso = new Date().toISOString();
   const { data, error } = await supabase
     .from("posts")
     .select(POST_SELECT)
     .eq("status", "published")
+    .lte("published_at", nowIso)
     .order("published_at", { ascending: false, nullsFirst: false });
   if (error) throw new Error(`Failed to fetch posts: ${error.message}`);
   return (data ?? []).map(rowToPost);
@@ -39,11 +41,13 @@ export const getPublishedPosts = cache(async (): Promise<Post[]> => {
 export const getPostBySlug = cache(
   async (slug: string): Promise<Post | null> => {
     const supabase = await createClient();
+    const nowIso = new Date().toISOString();
     const { data, error } = await supabase
       .from("posts")
       .select(POST_SELECT)
       .eq("slug", slug)
       .eq("status", "published")
+      .lte("published_at", nowIso)
       .maybeSingle();
     if (error) throw new Error(`Failed to fetch post: ${error.message}`);
     return data ? rowToPost(data) : null;
