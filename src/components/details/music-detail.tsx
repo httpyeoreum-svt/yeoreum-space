@@ -34,6 +34,32 @@ const EXTERNAL_ICON = (
   </svg>
 );
 
+const APPLE_MUSIC_LOGO = (
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-label="Apple Music">
+    <defs>
+      <linearGradient id="am-grad" x1="0" y1="0" x2="0" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#FA233B" />
+        <stop offset="1" stopColor="#FB5C74" />
+      </linearGradient>
+    </defs>
+    <rect width="24" height="24" rx="5" fill="url(#am-grad)" />
+    <path
+      d="M15.5 6.4l-7 1.5v7.5c-.3-.2-.7-.3-1.1-.3-1.1 0-2 .7-2 1.7s.9 1.7 2 1.7 2-.7 2-1.7v-6.5l5-1.1v5c-.3-.2-.7-.3-1.1-.3-1.1 0-2 .7-2 1.7s.9 1.7 2 1.7 2-.7 2-1.7V6.4z"
+      fill="white"
+    />
+  </svg>
+);
+
+const SPOTIFY_LOGO = (
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-label="Spotify">
+    <circle cx="12" cy="12" r="12" fill="#1DB954" />
+    <path
+      d="M17.5 17.3c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.32-1.32 9.72-.66 13.44 1.62.36.18.54.78.3 1.2zm.12-3.36c-3.84-2.28-10.26-2.52-13.92-1.38-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z"
+      fill="white"
+    />
+  </svg>
+);
+
 export async function MusicDetail({
   item,
   similar,
@@ -64,15 +90,15 @@ export async function MusicDetail({
           ============================ */}
       <div className="lg:hidden flex flex-col gap-4 px-4 pt-2 pb-[88px]">
         <YouTubeEmbed url={meta?.mvUrl} title={item.title} />
-        <TitleBlock item={item} />
+        <TitleBlock item={item} meta={meta} />
         <div className="-mt-3">
         <MusicTabs
           trackInfo={
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
               <TrackInfoTable item={item} meta={meta} />
               {meta?.genre && (
-                <div className="flex items-baseline gap-x-2 gap-y-1 flex-wrap">
-                  <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30 text-[11px]">
+                  <span className="text-[color:var(--color-ink-soft)] tracking-wide">
                     Genre
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -92,8 +118,8 @@ export async function MusicDetail({
                 </div>
               )}
               {moodObjs.length > 0 && (
-                <div className="flex items-baseline gap-x-2 gap-y-1 flex-wrap">
-                  <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30 text-[11px]">
+                  <span className="text-[color:var(--color-ink-soft)] tracking-wide">
                     Mood
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -193,7 +219,7 @@ export async function MusicDetail({
           </div>
         </div>
         <div className="flex flex-col gap-4 min-w-0 @container order-2 @[920px]:order-3">
-          <TitleBlock item={item} />
+          <TitleBlock item={item} meta={meta} />
           {(meta?.cover?.videoUrl || (meta?.cover?.members && meta.cover.members.length > 0)) && (
             <CoverSection
               videoUrl={meta?.cover?.videoUrl}
@@ -282,13 +308,40 @@ function SampleGallery({ samples }: { samples: string[] }) {
   );
 }
 
-function TitleBlock({ item }: { item: Item }) {
+function TitleBlock({ item, meta }: { item: Item; meta?: MusicMeta }) {
   const hasSubtitle = Boolean(item.titleSub && item.titleSubPublic);
   const hasKatakana = Boolean(item.creatorKatakana);
+  const listenLinks = (
+    <>
+      {meta?.appleMusicUrl && (
+        <a
+          href={meta.appleMusicUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Apple Music"
+          className="inline-flex hover:opacity-80 transition"
+        >
+          {APPLE_MUSIC_LOGO}
+        </a>
+      )}
+      {meta?.spotifyUrl && (
+        <a
+          href={meta.spotifyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Spotify"
+          className="inline-flex hover:opacity-80 transition"
+        >
+          {SPOTIFY_LOGO}
+        </a>
+      )}
+    </>
+  );
+  const hasListen = Boolean(meta?.appleMusicUrl || meta?.spotifyUrl);
 
   return (
     <div className="pb-1 border-b border-[color:var(--color-line)]/50">
-      {/* Mobile/Tablet (<lg): Title + Creator + Katakana on one line, with spacing. */}
+      {/* Mobile/Tablet (<lg): Title + Creator left, Listen icons right (after creator). */}
       <div className="flex items-baseline gap-x-4 gap-y-1 flex-wrap lg:block">
         <h2 className="font-serif text-[28px] @md:text-[36px] @xl:text-[44px] leading-[1.05] tracking-tight text-[color:var(--color-ink)] break-words">
           {item.title}
@@ -296,21 +349,33 @@ function TitleBlock({ item }: { item: Item }) {
         <p className="lg:hidden font-serif text-[13px] @md:text-[16px] text-[color:var(--color-ink-muted)] break-words">
           {item.creator}
         </p>
+        {hasListen && (
+          <span className="lg:hidden ml-auto inline-flex items-center gap-2 self-center">
+            {listenLinks}
+          </span>
+        )}
       </div>
       {hasSubtitle && (
         <p className="font-serif text-[18px] @md:text-[22px] text-[color:var(--color-ink-muted)] leading-tight mt-1 break-words">
           {item.titleSub}
         </p>
       )}
-      {/* Desktop only: Creator + Katakana on its own line */}
-      <p className="hidden lg:flex font-serif text-[16px] @md:text-[20px] text-[color:var(--color-ink-muted)] mt-1 mb-3 flex-col @sm:flex-row @sm:items-baseline @sm:gap-3">
-        <span>{item.creator}</span>
-        {hasKatakana && (
-          <span className="text-[11px] @md:text-[13px] text-[color:var(--color-ink-soft)] tracking-wide">
-            {item.creatorKatakana}
+      {/* Desktop only: Creator + Katakana left, Listen icons right */}
+      <div className="hidden lg:flex items-baseline gap-3 mt-1 mb-3 flex-wrap">
+        <p className="font-serif text-[16px] @md:text-[20px] text-[color:var(--color-ink-muted)] flex flex-col @sm:flex-row @sm:items-baseline @sm:gap-3">
+          <span>{item.creator}</span>
+          {hasKatakana && (
+            <span className="text-[11px] @md:text-[13px] text-[color:var(--color-ink-soft)] tracking-wide">
+              {item.creatorKatakana}
+            </span>
+          )}
+        </p>
+        {hasListen && (
+          <span className="ml-auto inline-flex items-center gap-2 self-center">
+            {listenLinks}
           </span>
         )}
-      </p>
+      </div>
     </div>
   );
 }
@@ -364,10 +429,8 @@ function TrackInfoTable({ item, meta }: { item: Item; meta?: MusicMeta }) {
     { label: "Country", value: formatCountry(meta?.country) },
   ].filter((r) => r.value);
 
-  const hasListen = Boolean(meta?.appleMusicUrl || meta?.spotifyUrl);
-
   const rowCls =
-    "grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30 last:border-b-0";
+    "grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30";
 
   return (
     <section>
@@ -392,35 +455,6 @@ function TrackInfoTable({ item, meta }: { item: Item; meta?: MusicMeta }) {
               <dd className="text-[color:var(--color-ink)] break-words">{r.value}</dd>
             </div>
           ))}
-        {hasListen && (
-          <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5">
-            <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Listen on</dt>
-            <dd className="text-[color:var(--color-ink)] flex flex-wrap gap-1.5">
-              {meta?.appleMusicUrl && (
-                <a
-                  href={meta.appleMusicUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)] px-2 py-1 text-[11px] text-[color:var(--color-ink)] hover:bg-[color:var(--color-cream-soft)] transition"
-                >
-                  Apple Music
-                  {EXTERNAL_ICON}
-                </a>
-              )}
-              {meta?.spotifyUrl && (
-                <a
-                  href={meta.spotifyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)] px-2 py-1 text-[11px] text-[color:var(--color-ink)] hover:bg-[color:var(--color-cream-soft)] transition"
-                >
-                  Spotify
-                  {EXTERNAL_ICON}
-                </a>
-              )}
-            </dd>
-          </div>
-        )}
       </dl>
     </section>
   );
