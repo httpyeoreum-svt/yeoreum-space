@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, JetBrains_Mono } from "next/font/google";
+import { Cormorant_Garamond, JetBrains_Mono, Noto_Serif_JP } from "next/font/google";
 import "./globals.css";
 
 const serif = Cormorant_Garamond({
@@ -15,6 +15,13 @@ const mono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+const jpSerif = Noto_Serif_JP({
+  variable: "--font-jp-serif-var",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
 export const metadata: Metadata = {
   title: "yeoreum space",
   description: "music · books · films · perfume · games — a personal collection",
@@ -28,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="ja"
-      className={`${serif.variable} ${mono.variable} h-full antialiased`}
+      className={`${serif.variable} ${mono.variable} ${jpSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full font-mono" suppressHydrationWarning>
         {children}

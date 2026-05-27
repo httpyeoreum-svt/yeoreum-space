@@ -34,8 +34,9 @@
   --color-mood-soft: #a1a98a;
 
   /* Fonts */
-  --font-serif: var(--font-serif-var);
-  --font-mono: var(--font-mono-var);
+  --font-serif: var(--font-serif-var), var(--font-jp-serif-var), serif;
+  --font-mono: var(--font-mono-var), var(--font-jp-serif-var), serif;
+  --font-jp-serif: var(--font-jp-serif-var), serif;
 }
 
 /*

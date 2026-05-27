@@ -14,6 +14,7 @@ import { MoodChip } from "../mood-chip";
 import { formatCardDate } from "@/lib/format";
 import { flagFromCountryName } from "@/lib/country";
 import { youtubeVideoId } from "@/lib/youtube";
+import { MusicTabs } from "./music-tabs";
 
 const EXTERNAL_ICON = (
   <svg
@@ -49,18 +50,130 @@ export async function MusicDetail({
     .map((slug) => allMoods.find((m) => m.slug === slug))
     .filter((m): m is Mood => Boolean(m));
 
+  const hasCover = Boolean(
+    meta?.cover?.videoUrl ||
+      (meta?.cover?.members && meta.cover.members.length > 0),
+  );
+  const hasLiked = Boolean(meta?.likedBy && meta.likedBy.length > 0);
+  const hasSamples = Boolean(meta?.samples && meta.samples.length > 0);
+
   return (
     <div className="@container">
-      {/* Top section — 3-col [YouTube | Jacket+KCB+Mood | Title+TrackInfo+Genre].
-          Mood and Genre are inline (label + value on one line) and pinned to
-          the bottom of their columns so they appear as a single row across
-          col2-col3, baseline-aligned with the YouTube's bottom. */}
-      <div className="grid grid-cols-1 @[920px]:grid-cols-[1fr_260px_1fr] gap-5 items-stretch px-4 sm:px-6 md:px-8 pt-2 pb-6">
-        <div className="min-w-0">
+      {/* ============================
+          MOBILE / TABLET (<lg) LAYOUT
+          ============================ */}
+      <div className="lg:hidden flex flex-col gap-4 px-4 pt-2 pb-[88px]">
+        <YouTubeEmbed url={meta?.mvUrl} title={item.title} />
+        <TitleBlock item={item} />
+        <MusicTabs
+          trackInfo={
+            <div className="flex flex-col gap-4">
+              <TrackInfoTable item={item} meta={meta} />
+              {meta?.genre && (
+                <div className="flex items-baseline gap-x-2 gap-y-1 flex-wrap">
+                  <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                    Genre
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {meta.genre
+                      .split(",")
+                      .map((g) => g.trim())
+                      .filter(Boolean)
+                      .map((tag, i) => (
+                        <span
+                          key={`${tag}-${i}`}
+                          className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              )}
+              {moodObjs.length > 0 && (
+                <div className="flex items-baseline gap-x-2 gap-y-1 flex-wrap">
+                  <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                    Mood
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {moodObjs.map((m) => (
+                      <MoodChip key={m.slug} mood={m} size="sm" href={`/moods/${m.slug}`} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {item.note && <NotesBlock note={item.note} date={item.addedAt} />}
+            </div>
+          }
+          coverLiked={
+            <div className="flex flex-col gap-6">
+              {hasCover && (
+                <CoverSection
+                  videoUrl={meta?.cover?.videoUrl}
+                  members={meta?.cover?.members}
+                  memberMap={memberMap}
+                />
+              )}
+              {hasLiked && (
+                <LikedBy
+                  people={meta!.likedBy!}
+                  group={meta?.likedByGroup}
+                  url={meta?.playlistNoteUrl}
+                  memberMap={memberMap}
+                />
+              )}
+              {!hasCover && !hasLiked && (
+                <p className="text-[12px] text-[color:var(--color-ink-soft)]">
+                  No cover or liked-by data.
+                </p>
+              )}
+            </div>
+          }
+          similar={
+            similar.length > 0 ? (
+              <SimilarSongs items={similar} allMoods={allMoods} />
+            ) : (
+              <p className="text-[12px] text-[color:var(--color-ink-soft)]">
+                No similar songs yet.
+              </p>
+            )
+          }
+        />
+        {hasSamples && (
+          <div className="fixed bottom-0 left-0 right-0 z-30 bg-[color:var(--color-cream)] border-t border-[color:var(--color-line)]/50 px-3 py-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+            <div className="flex gap-1.5 overflow-x-auto snap-x snap-mandatory scroll-x">
+              {meta!.samples!.slice(0, 4).map((url, i) => (
+                <div
+                  key={i}
+                  style={{ width: "110px", height: "62px" }}
+                  className="shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60 snap-center"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt={`Sample ${i + 1}`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ============================
+          DESKTOP (lg+) LAYOUT
+          ============================ */}
+      <div className="hidden lg:block">
+      {/* Top — 3-col [YouTube (1fr) | Jacket+KCB+Mood (260px) | Cover above Title (1fr)].
+          YouTube keeps its original 1fr width. Cover sits in col 3 above the Title block. */}
+      <div className="grid grid-cols-1 @[920px]:grid-cols-[1fr_260px_1fr] gap-5 items-start px-4 sm:px-6 md:px-8 pt-2 pb-6">
+        <div className="min-w-0 order-1">
           <YouTubeEmbed url={meta?.mvUrl} title={item.title} />
         </div>
-        <div className="flex flex-col gap-3 min-w-0 max-w-[260px] w-full mx-auto @[920px]:mx-0">
-          <div className="aspect-square w-full overflow-hidden">
+        <div className="flex flex-col gap-3 min-w-0 max-w-[260px] w-full mx-auto @[920px]:mx-0 order-3 @[920px]:order-2">
+          <div className="aspect-square w-full overflow-hidden hidden @[920px]:block">
             <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
           </div>
           <KeyCamelotBpm meta={meta} />
@@ -75,30 +188,8 @@ export async function MusicDetail({
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-4 min-w-0 @container">
+        <div className="flex flex-col gap-4 min-w-0 @container order-2 @[920px]:order-3">
           <TitleBlock item={item} />
-          <TrackInfoTable item={item} meta={meta} />
-          {meta?.genre && (
-            <div className="mt-auto pt-3 flex items-baseline gap-2 flex-wrap">
-              <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
-                Genre
-              </span>
-              <span className="text-[12px] text-[color:var(--color-ink)]">{meta.genre}</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="px-4 sm:px-6 md:px-8">
-        <div className="flex flex-col gap-6 min-w-0 @container">
-          {meta?.likedBy && meta.likedBy.length > 0 && (
-            <LikedBy
-              people={meta.likedBy}
-              group={meta.likedByGroup}
-              url={meta.playlistNoteUrl}
-              memberMap={memberMap}
-            />
-          )}
           {(meta?.cover?.videoUrl || (meta?.cover?.members && meta.cover.members.length > 0)) && (
             <CoverSection
               videoUrl={meta?.cover?.videoUrl}
@@ -106,13 +197,59 @@ export async function MusicDetail({
               memberMap={memberMap}
             />
           )}
-          {meta?.samples && meta.samples.length > 0 && (
-            <SampleGallery samples={meta.samples} />
+          <TrackInfoTable item={item} meta={meta} />
+          {meta?.genre && (
+            <div className="mt-auto pt-3 flex items-baseline gap-x-2 gap-y-1 flex-wrap">
+              <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                Genre
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {meta.genre
+                  .split(",")
+                  .map((g) => g.trim())
+                  .filter(Boolean)
+                  .map((tag, i) => (
+                    <span
+                      key={`${tag}-${i}`}
+                      className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+              </div>
+            </div>
           )}
-          {item.note && <NotesBlock note={item.note} date={item.addedAt} />}
-          {similar.length > 0 && <SimilarSongs items={similar} allMoods={allMoods} />}
         </div>
       </div>
+
+      <div className="px-4 sm:px-6 md:px-8">
+        <div className="flex flex-col gap-6 min-w-0 @container">
+          {((meta?.samples && meta.samples.length > 0) ||
+            (meta?.likedBy && meta.likedBy.length > 0) ||
+            similar.length > 0) && (
+            <div className="grid grid-cols-1 @[860px]:grid-cols-2 gap-6">
+              {meta?.samples && meta.samples.length > 0 && (
+                <SampleGallery samples={meta.samples} />
+              )}
+              {((meta?.likedBy && meta.likedBy.length > 0) || similar.length > 0) && (
+                <div className="flex flex-col gap-6 min-w-0">
+                  {meta?.likedBy && meta.likedBy.length > 0 && (
+                    <LikedBy
+                      people={meta.likedBy}
+                      group={meta.likedByGroup}
+                      url={meta.playlistNoteUrl}
+                      memberMap={memberMap}
+                    />
+                  )}
+                  {similar.length > 0 && <SimilarSongs items={similar} allMoods={allMoods} />}
+                </div>
+              )}
+            </div>
+          )}
+          {item.note && <NotesBlock note={item.note} date={item.addedAt} />}
+        </div>
+      </div>
+      </div>{/* end DESKTOP wrapper */}
 
     </div>
   );
@@ -120,22 +257,21 @@ export async function MusicDetail({
 
 function SampleGallery({ samples }: { samples: string[] }) {
   return (
-    <section className="px-4 sm:px-6 md:px-8 pb-10 pt-2">
-      <div className="flex sm:grid sm:grid-cols-2 gap-3 max-w-2xl overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-x -mx-4 sm:mx-0 px-4 sm:px-0 pb-2 sm:pb-0">
+    <section className="min-w-0">
+      <div className="flex sm:grid sm:grid-cols-2 gap-1.5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-x sm:max-w-[160px] lg:max-w-[200px]">
         {samples.slice(0, 4).map((url, i) => (
           <div
             key={i}
-            className="shrink-0 w-[85%] sm:w-auto snap-center"
+            style={{ width: "110px", height: "62px" }}
+            className="shrink-0 sm:!w-auto sm:!h-auto sm:aspect-video overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60 snap-center"
           >
-            <div className="aspect-video w-full overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={url}
-                alt={`Sample ${i + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={url}
+              alt={`Sample ${i + 1}`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
           </div>
         ))}
       </div>
@@ -144,19 +280,34 @@ function SampleGallery({ samples }: { samples: string[] }) {
 }
 
 function TitleBlock({ item }: { item: Item }) {
+  const hasSubtitle = Boolean(item.titleSub && item.titleSubPublic);
+  const hasKatakana = Boolean(item.creatorKatakana);
+
   return (
     <div className="pb-1 border-b border-[color:var(--color-line)]/50">
-      <h2 className="font-serif text-[28px] @md:text-[36px] @xl:text-[44px] leading-[1.05] tracking-tight text-[color:var(--color-ink)] break-words">
-        {item.title}
-      </h2>
-      {item.titleSub && item.titleSubPublic && (
+      {/* Mobile/Tablet (<lg): Title + Creator + Katakana on one line, with spacing. */}
+      <div className="flex items-baseline gap-x-6 gap-y-2 flex-wrap lg:block">
+        <h2 className="font-serif text-[28px] @md:text-[36px] @xl:text-[44px] leading-[1.05] tracking-tight text-[color:var(--color-ink)] break-words">
+          {item.title}
+        </h2>
+        <p className="lg:hidden font-serif text-[16px] @md:text-[20px] text-[color:var(--color-ink-muted)] break-words ml-2 lg:ml-0">
+          {item.creator}
+        </p>
+        {hasKatakana && (
+          <span className="lg:hidden text-[11px] @md:text-[13px] text-[color:var(--color-ink-soft)] tracking-wide ml-2 lg:ml-0">
+            {item.creatorKatakana}
+          </span>
+        )}
+      </div>
+      {hasSubtitle && (
         <p className="font-serif text-[18px] @md:text-[22px] text-[color:var(--color-ink-muted)] leading-tight mt-1 break-words">
           {item.titleSub}
         </p>
       )}
-      <p className="font-serif text-[16px] @md:text-[20px] text-[color:var(--color-ink-muted)] mt-1 mb-3 flex flex-col @sm:flex-row @sm:items-baseline @sm:gap-3">
+      {/* Desktop only: Creator + Katakana on its own line */}
+      <p className="hidden lg:flex font-serif text-[16px] @md:text-[20px] text-[color:var(--color-ink-muted)] mt-1 mb-3 flex-col @sm:flex-row @sm:items-baseline @sm:gap-3">
         <span>{item.creator}</span>
-        {item.creatorKatakana && (
+        {hasKatakana && (
           <span className="text-[11px] @md:text-[13px] text-[color:var(--color-ink-soft)] tracking-wide">
             {item.creatorKatakana}
           </span>
@@ -208,30 +359,62 @@ function FactBox({ label, value }: { label: string; value: string }) {
 }
 
 function TrackInfoTable({ item, meta }: { item: Item; meta?: MusicMeta }) {
-  const rows: InfoRow[] = [
-    { label: "Album",        value: meta?.album },
-    { label: "Release Date", value: meta?.releaseDate ? formatCardDate(meta.releaseDate) : undefined },
-    { label: "Length",       value: meta?.length },
-    { label: "Country",      value: formatCountry(meta?.country) },
+  const releaseDate = meta?.releaseDate ? formatCardDate(meta.releaseDate) : undefined;
+  const length = meta?.length;
+  const showReleaseLength = Boolean(releaseDate || length);
+
+  const otherRows: InfoRow[] = [
+    { label: "Album",   value: meta?.album },
+    { label: "Country", value: formatCountry(meta?.country) },
   ].filter((r) => r.value);
 
   const hasListen = Boolean(meta?.appleMusicUrl || meta?.spotifyUrl);
 
+  const rowCls =
+    "grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30 last:border-b-0";
+
   return (
     <section>
-      <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Track Info</h3>
       <dl className="text-[11px]">
-        {rows.map((r) => (
-          <div
-            key={r.label}
-            className="grid grid-cols-[5.5rem_1fr] sm:grid-cols-[7rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30 last:border-b-0"
-          >
-            <dt className="text-[color:var(--color-ink-soft)] tracking-wide">{r.label}</dt>
-            <dd className="text-[color:var(--color-ink)] break-words">{r.value}</dd>
+        {meta?.album && (
+          <div className={rowCls}>
+            <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Album</dt>
+            <dd className="text-[color:var(--color-ink)] break-words">{meta.album}</dd>
           </div>
-        ))}
+        )}
+        {showReleaseLength && (
+          <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5">
+            <dt className="text-[color:var(--color-ink-soft)] tracking-wide">
+              {releaseDate ? "Release Date" : "Length"}
+            </dt>
+            <dd className="text-[color:var(--color-ink)] flex items-baseline gap-x-4">
+              {releaseDate && (
+                <span className="border-b border-[color:var(--color-line)]/30 pb-1 flex-1 min-w-0">
+                  {releaseDate}
+                </span>
+              )}
+              {releaseDate && length && (
+                <span className="inline-flex items-baseline gap-1.5 flex-1 min-w-0">
+                  <span className="text-[color:var(--color-ink-soft)] tracking-wide shrink-0">Length</span>
+                  <span className="border-b border-[color:var(--color-line)]/30 pb-1 flex-1">{length}</span>
+                </span>
+              )}
+              {!releaseDate && length && (
+                <span className="border-b border-[color:var(--color-line)]/30 pb-1 flex-1 min-w-0">{length}</span>
+              )}
+            </dd>
+          </div>
+        )}
+        {otherRows
+          .filter((r) => r.label !== "Album")
+          .map((r) => (
+            <div key={r.label} className={rowCls}>
+              <dt className="text-[color:var(--color-ink-soft)] tracking-wide">{r.label}</dt>
+              <dd className="text-[color:var(--color-ink)] break-words">{r.value}</dd>
+            </div>
+          ))}
         {hasListen && (
-          <div className="grid grid-cols-[5.5rem_1fr] sm:grid-cols-[7rem_1fr] items-baseline gap-x-2 py-1.5">
+          <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5">
             <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Listen on</dt>
             <dd className="text-[color:var(--color-ink)] flex flex-wrap gap-1.5">
               {meta?.appleMusicUrl && (
@@ -278,10 +461,20 @@ function MoodSection({ moodObjs }: { moodObjs: Mood[] }) {
 }
 
 function GenreSection({ genre }: { genre: string }) {
+  const tags = genre.split(",").map((g) => g.trim()).filter(Boolean);
   return (
     <section>
       <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Genre</h3>
-      <p className="text-[12px] text-[color:var(--color-ink)] leading-snug">{genre}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {tags.map((tag, i) => (
+          <span
+            key={`${tag}-${i}`}
+            className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+          >
+            #{tag}
+          </span>
+        ))}
+      </div>
     </section>
   );
 }
@@ -296,7 +489,7 @@ function YouTubeEmbed({ url, title }: { url?: string; title: string }) {
   return (
     <div className="aspect-video w-full bg-black overflow-hidden border border-[color:var(--color-paper-edge)]">
       <iframe
-        src={`https://www.youtube.com/embed/${id}?rel=0`}
+        src={`https://www.youtube.com/embed/${id}?rel=0&playsinline=1`}
         title={`${title} — MV`}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
@@ -357,18 +550,18 @@ function LikedBy({
 function Avatar({ person, avatarUrl }: { person: LikedByPerson; avatarUrl?: string }) {
   const initials = person.name.slice(0, 2).toUpperCase();
   return (
-    <div className="flex flex-col items-center gap-1.5 w-14">
-      <div className="w-12 h-12 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
+    <div className="flex flex-col items-center gap-2 w-24">
+      <div className="w-20 h-20 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={avatarUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
         ) : (
-          <span className="font-serif text-[12px] tracking-wide text-[color:var(--color-ink-muted)]">
+          <span className="font-serif text-[16px] tracking-wide text-[color:var(--color-ink-muted)]">
             {initials}
           </span>
         )}
       </div>
-      <p className="text-[10px] tracking-wide text-[color:var(--color-ink)]">{person.name}</p>
+      <p className="text-[12px] tracking-wide text-[color:var(--color-ink)] text-center">{person.name}</p>
     </div>
   );
 }
@@ -435,7 +628,7 @@ function CoverSection({
       {ytId && (
         <div className="aspect-video w-full max-w-2xl bg-black overflow-hidden border border-[color:var(--color-paper-edge)]">
           <iframe
-            src={`https://www.youtube.com/embed/${ytId}?rel=0`}
+            src={`https://www.youtube.com/embed/${ytId}?rel=0&playsinline=1`}
             title="Cover performance"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
