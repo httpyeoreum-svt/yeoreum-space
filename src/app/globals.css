@@ -62,6 +62,8 @@
 html, body {
   background: var(--color-cream);
   color: var(--color-ink);
+  /* Prevent iOS Safari rubber-band scrolling pulling fixed elements (Sample bar) with the viewport. */
+  overscroll-behavior-y: contain;
 }
 
 /* Subtle paper texture (optional, low-cost) */
