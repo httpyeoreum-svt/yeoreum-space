@@ -102,7 +102,6 @@ export async function MusicDetail({
                   </div>
                 </div>
               )}
-              {item.note && <NotesBlock note={item.note} date={item.addedAt} />}
             </div>
           }
           cover={
@@ -249,7 +248,6 @@ export async function MusicDetail({
               )}
             </div>
           )}
-          {item.note && <NotesBlock note={item.note} date={item.addedAt} />}
         </div>
       </div>
       </div>{/* end DESKTOP wrapper */}
