@@ -94,6 +94,7 @@ export async function MusicDetail({
         <div className="-mt-3">
         <MusicTabs
           counts={{
+            cover: hasCover ? 1 : 0,
             liked: meta?.likedBy?.length ?? 0,
             similar: similar.length,
           }}
@@ -682,12 +683,15 @@ function SimilarSongs({ items }: { items: Item[] }) {
   return (
     <section>
       <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Similar Songs</h3>
-      <ul className="flex flex-col divide-y divide-[color:var(--color-line)]/30">
+      <ul className="grid grid-cols-2 gap-x-3">
         {items.map((s) => (
-          <li key={s.id}>
+          <li
+            key={s.id}
+            className="border-b border-[color:var(--color-line)]/30 min-w-0"
+          >
             <Link
               href={`/items/${s.id}`}
-              className="group flex items-center gap-3 py-2.5 transition hover:bg-[color:var(--color-cream-soft)]/40 px-1"
+              className="group flex items-center gap-3 py-2.5 transition hover:bg-[color:var(--color-cream-soft)]/40 px-1 min-w-0"
             >
               <div className="w-12 h-12 shrink-0 overflow-hidden">
                 <ImagePlaceholder category={s.category} id={s.id} imageUrl={s.imageUrl} />
