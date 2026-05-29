@@ -220,7 +220,9 @@ export async function MusicDetail({
           <div
             className="fixed bottom-0 left-0 right-0 z-30 border-t border-[color:var(--color-line)]/50 px-3 py-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] overflow-hidden"
             style={{
-              backgroundColor: meta?.color ?? "var(--color-cream)",
+              backgroundColor: meta?.color
+                ? withAlpha(meta.color, 0.35)
+                : "var(--color-cream)",
             }}
           >
             <div className="flex gap-1.5 w-max animate-[marquee_25s_linear_infinite]">
