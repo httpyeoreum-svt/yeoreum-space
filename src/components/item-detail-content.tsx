@@ -13,13 +13,16 @@ import { getCuratedSimilars } from "@/lib/db/items";
 export async function ItemDetailContent({
   item,
   related,
+  artistSlug,
 }: {
   item: Item;
   related: Item[];
+  /** Slug of the artist profile page if the creator has ≥ threshold tracks. */
+  artistSlug?: string;
 }) {
   if (item.category === "music") {
     const similar = await getCuratedSimilars(item.id);
-    return <MusicDetail item={item} similar={similar} />;
+    return <MusicDetail item={item} similar={similar} artistSlug={artistSlug} />;
   }
   return <GenericDetail item={item} related={related} />;
 }

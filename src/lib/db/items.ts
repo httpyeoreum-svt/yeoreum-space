@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Item, MoodSlug } from "@/lib/types";
 import { rowToItem } from "./transform";
 
-const ITEM_SELECT = "*, item_moods(mood_slug)";
+const ITEM_SELECT = "*, item_moods(mood_slug), item_scenes(scene_slug)";
 
 /** All items, sorted by addedAt descending. Cached per request. */
 export const getAllItems = cache(async (): Promise<Item[]> => {

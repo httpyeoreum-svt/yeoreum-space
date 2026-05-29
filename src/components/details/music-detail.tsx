@@ -8,6 +8,7 @@ import type {
   MusicMeta,
 } from "@/lib/types";
 import { getAllMoods } from "@/lib/db/moods";
+import { getAllScenes } from "@/lib/db/scenes";
 import { getMemberMap } from "@/lib/db/members";
 import { ImagePlaceholder } from "../image-placeholder";
 import { MoodChip } from "../mood-chip";
@@ -63,11 +64,19 @@ const SPOTIFY_LOGO = (
 export async function MusicDetail({
   item,
   similar,
+  artistSlug,
 }: {
   item: Item;
   similar: Item[];
+  artistSlug?: string;
 }) {
-  const allMoods = await getAllMoods();
+  const [allMoods, allScenes] = await Promise.all([
+    getAllMoods(),
+    getAllScenes(),
+  ]);
+  const sceneObjs = (item.scenes ?? [])
+    .map((slug) => allScenes.find((s) => s.slug === slug))
+    .filter((s): s is { slug: string; label: string } => Boolean(s));
   const memberMap = await getMemberMap();
   const meta = (item.meta?.category === "music" ? item.meta : undefined) as
     | MusicMeta
@@ -90,7 +99,7 @@ export async function MusicDetail({
           ============================ */}
       <div className="lg:hidden flex flex-col gap-4 px-4 pt-2 pb-[88px]">
         <YouTubeEmbed url={meta?.mvUrl} title={item.title} />
-        <TitleBlock item={item} meta={meta} />
+        <TitleBlock item={item} meta={meta} artistSlug={artistSlug} />
         <div className="-mt-3">
         <MusicTabs
           counts={{
@@ -100,6 +109,22 @@ export async function MusicDetail({
           }}
           trackInfo={
             <div className="flex flex-col">
+              {meta?.recommendation && (
+                <div className="mb-3 flex flex-wrap gap-1.5">
+                  {meta.recommendation
+                    .split(",")
+                    .map((t) => t.trim())
+                    .filter(Boolean)
+                    .map((tag, i) => (
+                      <span
+                        key={`${tag}-${i}`}
+                        className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                </div>
+              )}
               <TrackInfoTable item={item} meta={meta} />
               {meta?.genre && (
                 <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30 text-[11px]">
@@ -130,6 +155,23 @@ export async function MusicDetail({
                   <div className="flex flex-wrap gap-1.5">
                     {moodObjs.map((m) => (
                       <MoodChip key={m.slug} mood={m} size="sm" href={`/moods/${m.slug}`} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {sceneObjs.length > 0 && (
+                <div className="grid grid-cols-[7rem_1fr] sm:grid-cols-[8.5rem_1fr] items-baseline gap-x-2 py-1.5 border-b border-[color:var(--color-line)]/30 text-[11px]">
+                  <span className="text-[color:var(--color-ink-soft)] tracking-wide">
+                    Scene
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {sceneObjs.map((s) => (
+                      <span
+                        key={s.slug}
+                        className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                      >
+                        {s.label}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -222,9 +264,42 @@ export async function MusicDetail({
               ))}
             </div>
           </div>
+          {sceneObjs.length > 0 && (
+            <div className="pt-2 flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                Scene
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {sceneObjs.map((s) => (
+                  <span
+                    key={s.slug}
+                    className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                  >
+                    {s.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-4 min-w-0 @container order-2 @[920px]:order-3">
-          <TitleBlock item={item} meta={meta} />
+          <TitleBlock item={item} meta={meta} artistSlug={artistSlug} />
+          {meta?.recommendation && (
+            <div className="flex flex-wrap gap-1.5">
+              {meta.recommendation
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean)
+                .map((tag, i) => (
+                  <span
+                    key={`${tag}-${i}`}
+                    className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+            </div>
+          )}
           {(meta?.cover?.videoUrl || (meta?.cover?.members && meta.cover.members.length > 0)) && (
             <CoverSection
               videoUrl={meta?.cover?.videoUrl}
@@ -313,9 +388,27 @@ function SampleGallery({ samples }: { samples: string[] }) {
   );
 }
 
-function TitleBlock({ item, meta }: { item: Item; meta?: MusicMeta }) {
+function TitleBlock({
+  item,
+  meta,
+  artistSlug,
+}: {
+  item: Item;
+  meta?: MusicMeta;
+  artistSlug?: string;
+}) {
   const hasSubtitle = Boolean(item.titleSub && item.titleSubPublic);
   const hasKatakana = Boolean(item.creatorKatakana);
+  const creatorContent = artistSlug ? (
+    <Link
+      href={`/artists/${artistSlug}`}
+      className="hover:underline underline-offset-2"
+    >
+      {item.creator}
+    </Link>
+  ) : (
+    item.creator
+  );
   const listenLinks = (
     <>
       {meta?.appleMusicUrl && (
@@ -352,7 +445,7 @@ function TitleBlock({ item, meta }: { item: Item; meta?: MusicMeta }) {
           {item.title}
         </h2>
         <p className="lg:hidden font-serif text-[13px] @md:text-[16px] text-[color:var(--color-ink-muted)] break-words">
-          {item.creator}
+          {creatorContent}
         </p>
         {hasListen && (
           <span className="lg:hidden ml-auto inline-flex items-center gap-2 self-center">
@@ -368,7 +461,7 @@ function TitleBlock({ item, meta }: { item: Item; meta?: MusicMeta }) {
       {/* Desktop only: Creator + Katakana left, Listen icons right */}
       <div className="hidden lg:flex items-baseline gap-3 mt-1 mb-3 flex-wrap">
         <p className="font-serif text-[16px] @md:text-[20px] text-[color:var(--color-ink-muted)] flex flex-col @sm:flex-row @sm:items-baseline @sm:gap-3">
-          <span>{item.creator}</span>
+          <span>{creatorContent}</span>
           {hasKatakana && (
             <span className="text-[11px] @md:text-[13px] text-[color:var(--color-ink-soft)] tracking-wide">
               {item.creatorKatakana}

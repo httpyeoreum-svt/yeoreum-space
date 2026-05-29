@@ -5,11 +5,15 @@ import type {
   ItemMeta,
   Mood,
   MoodSlug,
+  SceneSlug,
 } from "../types";
 
-/** Map a `items` row (with `item_moods(mood_slug)` joined) to the app `Item` shape. */
+/** Map a `items` row (with `item_moods(mood_slug)` and `item_scenes(scene_slug)` joined) to the app `Item` shape. */
 export function rowToItem(row: Record<string, unknown>): Item {
-  const joined = (row.item_moods as { mood_slug: string }[] | undefined) ?? [];
+  const joinedMoods =
+    (row.item_moods as { mood_slug: string }[] | undefined) ?? [];
+  const joinedScenes =
+    (row.item_scenes as { scene_slug: string }[] | undefined) ?? [];
   return {
     id: row.id as string,
     category: row.category as Category,
@@ -22,7 +26,8 @@ export function rowToItem(row: Record<string, unknown>): Item {
     addedAt: row.added_at as string,
     note: (row.note as string | null) ?? undefined,
     meta: (row.meta as ItemMeta | null) ?? undefined,
-    moods: joined.map((m) => m.mood_slug as MoodSlug),
+    moods: joinedMoods.map((m) => m.mood_slug as MoodSlug),
+    scenes: joinedScenes.map((s) => s.scene_slug as SceneSlug),
     ageLimit: (row.age_limit as boolean | null) ?? false,
   };
 }

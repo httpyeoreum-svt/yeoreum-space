@@ -7,6 +7,7 @@ import { AgeGate } from "@/components/age-gate";
 import { isAgeVerified } from "@/lib/age-verify";
 import { isItemLocked } from "@/lib/item-lock";
 import { CATEGORY_META } from "@/lib/types";
+import { artistSlug, getArtistProfileSlugs } from "@/lib/artist";
 
 export default async function ItemPage({
   params,
@@ -30,13 +31,22 @@ export default async function ItemPage({
 
   const categoryMeta = CATEGORY_META[item.category];
 
+  const allItems = await getAllItems();
   // Find next item in same category, sorted by id ascending.
-  const allInCategory = (await getAllItems())
+  const allInCategory = allItems
     .filter((i) => i.category === item.category)
     .sort((a, b) => a.id.localeCompare(b.id));
   const idx = allInCategory.findIndex((i) => i.id === item.id);
   const nextItem =
     idx >= 0 && idx < allInCategory.length - 1 ? allInCategory[idx + 1] : null;
+
+  // If this music item's creator has a profile page (>= threshold tracks), pass its slug down.
+  const profileSlugs =
+    item.category === "music" ? getArtistProfileSlugs(allItems) : null;
+  const itemArtistSlug =
+    profileSlugs && profileSlugs.has(artistSlug(item.creator))
+      ? artistSlug(item.creator)
+      : undefined;
 
   return (
     <div className="flex-1 min-h-0 overflow-y-auto overscroll-y-none">
@@ -68,7 +78,7 @@ export default async function ItemPage({
           <span />
         )}
       </div>
-      <ItemDetailContent item={item} related={related} />
+      <ItemDetailContent item={item} related={related} artistSlug={itemArtistSlug} />
     </div>
   );
 }

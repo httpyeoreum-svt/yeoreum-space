@@ -20,6 +20,14 @@ export type MoodSlug =
   | "summer"
   | "soft";
 
+export type SceneSlug = string;
+
+/** Master entry in the scenes list (emotional / situational tag — 失恋, 後悔, etc.). */
+export type Scene = {
+  slug: SceneSlug;
+  label: string;
+};
+
 export type Mood = {
   slug: MoodSlug;
   label: string;
@@ -95,6 +103,8 @@ export type MusicMeta = {
   likedByGroup?: string;
   /** External URL for a "playlist note" link. */
   playlistNoteUrl?: string;
+  /** Owner's recommendation note — short freeform text explaining why this song stands out. */
+  recommendation?: string;
   /** Musical key as written, e.g. "D# Minor", "Cm". */
   musicalKey?: string;
   /** Camelot wheel notation, e.g. "2A", "10B". */
@@ -169,6 +179,7 @@ export type Item = {
   /** ISO date string */
   addedAt: string;
   moods: MoodSlug[];
+  scenes: SceneSlug[];
   note?: string;
   meta?: ItemMeta;
   /** True ⇒ blurred on lists and gated on detail until the viewer unlocks age. */
