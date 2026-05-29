@@ -98,7 +98,7 @@ export async function MusicDetail({
           MOBILE / TABLET (<lg) LAYOUT
           ============================ */}
       <div className="lg:hidden flex flex-col gap-4 px-4 pt-2 pb-[88px]">
-        <YouTubeEmbed url={meta?.mvUrl} title={item.title} />
+        <YouTubeEmbed url={meta?.mvUrl} title={item.title} color={meta?.color} />
         <TitleBlock item={item} meta={meta} artistSlug={artistSlug} />
         <div className="-mt-3">
         <MusicTabs
@@ -217,7 +217,12 @@ export async function MusicDetail({
         />
         </div>{/* end MusicTabs wrapper (negative top margin) */}
         {hasSamples && (
-          <div className="fixed bottom-0 left-0 right-0 z-30 bg-[color:var(--color-cream)] border-t border-[color:var(--color-line)]/50 px-3 py-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] overflow-hidden">
+          <div
+            className="fixed bottom-0 left-0 right-0 z-30 border-t border-[color:var(--color-line)]/50 px-3 py-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] overflow-hidden"
+            style={{
+              backgroundColor: meta?.color ?? "var(--color-cream)",
+            }}
+          >
             <div className="flex gap-1.5 w-max animate-[marquee_25s_linear_infinite]">
               {[...meta!.samples!.slice(0, 4), ...meta!.samples!.slice(0, 4)].map((url, i) => (
                 <div
@@ -247,7 +252,7 @@ export async function MusicDetail({
           YouTube keeps its original 1fr width. Cover sits in col 3 above the Title block. */}
       <div className="grid grid-cols-1 @[920px]:grid-cols-[1fr_260px_1fr] gap-5 items-start px-4 sm:px-6 md:px-8 pt-2 pb-6">
         <div className="min-w-0 order-1">
-          <YouTubeEmbed url={meta?.mvUrl} title={item.title} />
+          <YouTubeEmbed url={meta?.mvUrl} title={item.title} color={meta?.color} />
         </div>
         <div className="flex flex-col gap-3 min-w-0 max-w-[260px] w-full mx-auto @[920px]:mx-0 order-3 @[920px]:order-2">
           <div className="aspect-square w-full overflow-hidden hidden @[920px]:block">
@@ -594,21 +599,45 @@ function GenreSection({ genre }: { genre: string }) {
  * Top-of-page YouTube iframe. Renders nothing if the URL isn't a recognizable
  * YouTube link, so songs without an MV simply don't take any vertical space.
  */
-function YouTubeEmbed({ url, title }: { url?: string; title: string }) {
+function YouTubeEmbed({
+  url,
+  title,
+  color,
+}: {
+  url?: string;
+  title: string;
+  color?: string;
+}) {
   const id = youtubeVideoId(url);
   if (!id) return null;
+  const tint = color ? withAlpha(color, 0.35) : null;
   return (
-    <div className="aspect-video w-full bg-black overflow-hidden border border-[color:var(--color-paper-edge)]">
-      <iframe
-        src={`https://www.youtube.com/embed/${id}?rel=0&playsinline=1`}
-        title={`${title} — MV`}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        referrerPolicy="strict-origin-when-cross-origin"
-        className="w-full h-full"
-      />
+    <div
+      className="w-full overflow-hidden border border-[color:var(--color-paper-edge)]"
+      style={tint ? { backgroundColor: tint, padding: "10px" } : undefined}
+    >
+      <div className="aspect-video w-full bg-black overflow-hidden">
+        <iframe
+          src={`https://www.youtube.com/embed/${id}?rel=0&playsinline=1`}
+          title={`${title} — MV`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
+          className="w-full h-full"
+        />
+      </div>
     </div>
   );
+}
+
+/** Append an alpha channel to a "#rrggbb" hex. Falls back to the input if not a valid hex. */
+function withAlpha(hex: string, alpha: number): string {
+  const m = /^#([0-9a-fA-F]{6})$/.exec(hex.trim());
+  if (!m) return hex;
+  const a = Math.round(Math.max(0, Math.min(1, alpha)) * 255)
+    .toString(16)
+    .padStart(2, "0");
+  return `#${m[1]}${a}`;
 }
 
 function LikedBy({

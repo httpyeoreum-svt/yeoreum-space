@@ -1,5 +1,6 @@
-import type { Item } from "@/lib/types";
+import type { Item, LikedByPerson, Member, PerfumeMeta } from "@/lib/types";
 import { getAllMoods } from "@/lib/db/moods";
+import { getMemberMap } from "@/lib/db/members";
 import { ImagePlaceholder } from "../image-placeholder";
 import { MoodChip } from "../mood-chip";
 import { ItemCardSmall } from "../item-card-small";
@@ -17,6 +18,11 @@ export async function GenericDetail({
 }) {
   const moods = await getAllMoods();
   const ageVerified = await isAgeVerified();
+  const needsMembers =
+    item.meta?.category === "perfume" &&
+    item.meta.likedBy &&
+    item.meta.likedBy.length > 0;
+  const memberMap = needsMembers ? await getMemberMap() : null;
   const moodObjs = item.moods
     .map((slug) => moods.find((m) => m.slug === slug))
     .filter((m): m is NonNullable<typeof m> => Boolean(m));
@@ -59,14 +65,53 @@ export async function GenericDetail({
         </div>
       </div>
 
+      {item.meta?.category === "perfume" && (
+        <PerfumeMetaBlock meta={item.meta} />
+      )}
+
       {item.note && (
         <div className="px-4 sm:px-6 md:px-8 pb-6 pt-5 border-t border-dashed border-[color:var(--color-paper-edge)] mx-4 sm:mx-6 md:mx-8">
-          <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2">NOTE</p>
+          <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2">
+            {item.category === "perfume" ? "紹介" : "NOTE"}
+          </p>
           <p className="font-serif text-[18px] leading-snug text-[color:var(--color-ink)]">
-            &ldquo;{item.note}&rdquo;
+            {item.category === "perfume" ? item.note : <>&ldquo;{item.note}&rdquo;</>}
           </p>
         </div>
       )}
+
+      {item.meta?.category === "perfume" && item.meta.purchaseUrl && (
+        <div className="px-4 sm:px-6 md:px-8 pb-7 pt-3">
+          <a
+            href={item.meta.purchaseUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 border border-[color:var(--color-ink)]/70 px-4 py-2 text-[11px] tracking-[0.2em] text-[color:var(--color-ink)] hover:bg-[color:var(--color-ink)] hover:text-[color:var(--color-paper)] transition"
+          >
+            販売先へ
+            <span aria-hidden>↗</span>
+          </a>
+        </div>
+      )}
+
+      {item.meta?.category === "perfume" &&
+        item.meta.likedBy &&
+        item.meta.likedBy.length > 0 &&
+        memberMap && (
+          <div className="px-4 sm:px-6 md:px-8 pb-7 pt-5 border-t border-dashed border-[color:var(--color-paper-edge)] mx-4 sm:mx-6 md:mx-8">
+            <div className="flex items-baseline gap-3 flex-wrap mb-3">
+              <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                LIKED BY
+              </p>
+              {item.meta.likedByGroup && (
+                <p className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-muted)]">
+                  {item.meta.likedByGroup}
+                </p>
+              )}
+            </div>
+            <PerfumeLikedBy people={item.meta.likedBy} memberMap={memberMap} />
+          </div>
+        )}
 
       {related.length > 0 && (
         <div className="px-4 sm:px-6 md:px-8 pt-5 pb-7 border-t border-[color:var(--color-line)]/40 bg-[color:var(--color-cream-soft)]/40">
@@ -85,5 +130,151 @@ export async function GenericDetail({
         </div>
       )}
     </article>
+  );
+}
+
+function PerfumeMetaBlock({ meta }: { meta: PerfumeMeta }) {
+  const stages: { label: string; notes: string[] }[] = (
+    [
+      { label: "TOP", notes: meta.notesTop },
+      { label: "MIDDLE", notes: meta.notesMiddle },
+      { label: "LAST", notes: meta.notesLast },
+    ] as const
+  ).flatMap((s) =>
+    s.notes && s.notes.length > 0
+      ? [{ label: s.label, notes: s.notes }]
+      : [],
+  );
+
+  const hasMoods = meta.moods && meta.moods.length > 0;
+  const hasNotes = stages.length > 0;
+  const hasConcentration = Boolean(meta.concentration);
+  // Legacy flat notes (no Top/Middle/Last categorization) — render once below.
+  const legacyNotes =
+    !hasNotes && meta.notes && meta.notes.length > 0 ? meta.notes : null;
+
+  if (!hasMoods && !hasNotes && !legacyNotes && !hasConcentration) return null;
+
+  return (
+    <div className="px-4 sm:px-6 md:px-8 pb-6 pt-5 border-t border-dashed border-[color:var(--color-paper-edge)] mx-4 sm:mx-6 md:mx-8 flex flex-col gap-5">
+      {hasConcentration && (
+        <div>
+          <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2">
+            賦香率
+          </p>
+          <p className="font-serif text-[15px] text-[color:var(--color-ink)]">
+            {meta.concentration}
+          </p>
+        </div>
+      )}
+      {hasMoods && (
+        <div>
+          <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2">
+            CHARACTER
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {meta.moods!.map((m) => (
+              <span
+                key={m}
+                className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+              >
+                {m}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {hasNotes && (
+        <div>
+          <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2">
+            OLFACTION
+          </p>
+          <ul className="flex flex-col">
+            {stages.map((s, i) => (
+              <li
+                key={s.label}
+                className={`grid grid-cols-[3.5rem_1fr] sm:grid-cols-[4.5rem_1fr] items-baseline gap-3 py-2 ${
+                  i < stages.length - 1
+                    ? "border-b border-[color:var(--color-line)]/30"
+                    : ""
+                }`}
+              >
+                <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+                  {s.label}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {s.notes.map((n) => (
+                    <span
+                      key={n}
+                      className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                    >
+                      {n}
+                    </span>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {legacyNotes && (
+        <div>
+          <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2">
+            NOTES
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {legacyNotes.map((n) => (
+              <span
+                key={n}
+                className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+              >
+                {n}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PerfumeLikedBy({
+  people,
+  memberMap,
+}: {
+  people: LikedByPerson[];
+  memberMap: Map<string, Member>;
+}) {
+  return (
+    <div className="flex flex-wrap items-start gap-x-4 gap-y-3">
+      {people.map((p) => {
+        const avatarUrl = p.avatarUrl ?? memberMap.get(p.name)?.avatarUrl;
+        const initials = p.name.slice(0, 2).toUpperCase();
+        return (
+          <div key={p.name} className="flex flex-col items-center gap-1.5 w-16">
+            <div className="w-14 h-14 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <span className="font-serif text-[13px] tracking-wide text-[color:var(--color-ink-muted)]">
+                  {initials}
+                </span>
+              )}
+            </div>
+            <p className="text-[11px] tracking-wide text-[color:var(--color-ink)] text-center">
+              {p.name}
+            </p>
+          </div>
+        );
+      })}
+    </div>
   );
 }

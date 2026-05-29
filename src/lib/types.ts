@@ -113,6 +113,9 @@ export type MusicMeta = {
   bpm?: number;
   /** Spotify/TuneBat-style audio features. All optional, 0-100 unless noted. */
   audioFeatures?: AudioFeatures;
+  /** Theme color (hex, e.g. "#5b6f8a"). Drives the smartphone slideshow
+   * background and the translucent header strip behind artist name. */
+  color?: string;
 };
 
 /** Manually entered Spotify audio features. 0-100 except loudness (dB). */
@@ -149,8 +152,24 @@ export type FilmsMeta = {
 
 export type PerfumeMeta = {
   category: "perfume";
-  brand?: string;
+  /** Character moods (Cool / Warm / Floral / etc.). */
+  moods?: string[];
+  /** @deprecated Flat olfaction notes — superseded by notesTop / notesMiddle / notesLast. */
   notes?: string[];
+  /** Top notes. */
+  notesTop?: string[];
+  /** Middle / heart notes. */
+  notesMiddle?: string[];
+  /** Last / base notes. */
+  notesLast?: string[];
+  /** Fragrance concentration tier — Parfum / EDP / EDT / EDC / Eau Fraîche. */
+  concentration?: string;
+  /** External URL where this fragrance can be purchased. */
+  purchaseUrl?: string;
+  /** Members who like / wear / recommend this fragrance. */
+  likedBy?: LikedByPerson[];
+  /** Group header for likedBy, e.g. "SEVENTEEN". */
+  likedByGroup?: string;
 };
 
 export type GamesMeta = {
