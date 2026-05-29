@@ -19,7 +19,7 @@ export function ItemCardSmall({ item, locked }: { item: Item; locked?: boolean }
     >
       <header className="flex items-center justify-between pb-1.5">
         <span className="text-[8px] tracking-[0.2em] text-[color:var(--color-ink-soft)]">
-          {locked ? "—" : item.id}
+          {item.id}
         </span>
         <CategoryLabel category={item.category} className="!text-[7px] !tracking-[0.15em]" />
       </header>

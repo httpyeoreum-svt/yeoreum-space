@@ -6,6 +6,7 @@ import { getItemsByMood } from "@/lib/db/items";
 import { ItemCardSmall } from "@/components/item-card-small";
 import { MoodChip } from "@/components/mood-chip";
 import { isAgeVerified } from "@/lib/age-verify";
+import { isItemLocked } from "@/lib/item-lock";
 
 export default async function MoodPage({
   params,
@@ -62,7 +63,7 @@ export default async function MoodPage({
               <ItemCardSmall
                 key={item.id}
                 item={item}
-                locked={item.ageLimit && !ageVerified}
+                locked={isItemLocked(item, ageVerified)}
               />
             ))}
           </div>

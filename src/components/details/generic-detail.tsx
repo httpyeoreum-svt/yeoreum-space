@@ -5,6 +5,7 @@ import { MoodChip } from "../mood-chip";
 import { ItemCardSmall } from "../item-card-small";
 import { formatCardDate } from "@/lib/format";
 import { isAgeVerified } from "@/lib/age-verify";
+import { isItemLocked } from "@/lib/item-lock";
 
 /** Fallback layout for items without a category-specific detail view yet. */
 export async function GenericDetail({
@@ -77,7 +78,7 @@ export async function GenericDetail({
               <ItemCardSmall
                 key={r.id}
                 item={r}
-                locked={r.ageLimit && !ageVerified}
+                locked={isItemLocked(r, ageVerified)}
               />
             ))}
           </div>

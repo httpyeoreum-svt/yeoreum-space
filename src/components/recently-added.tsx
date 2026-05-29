@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import type { Item } from "@/lib/types";
 import { ItemCardLarge } from "./item-card-large";
 import { isAgeVerified } from "@/lib/age-verify";
+import { isItemLocked } from "@/lib/item-lock";
 
 export async function RecentlyAdded({ items }: { items: Item[] }) {
   const verified = await isAgeVerified();
@@ -23,7 +24,7 @@ export async function RecentlyAdded({ items }: { items: Item[] }) {
             key={item.id}
             className={`flex-none w-[110px] ${i >= 6 ? "hidden lg:block" : "block"}`}
           >
-            <ItemCardLarge item={item} locked={item.ageLimit && !verified} />
+            <ItemCardLarge item={item} locked={isItemLocked(item, verified)} />
           </div>
         ))}
       </div>

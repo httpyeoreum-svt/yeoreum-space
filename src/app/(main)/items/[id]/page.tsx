@@ -5,6 +5,7 @@ import { getAllItems, getItemById, getRelatedByMood } from "@/lib/db/items";
 import { ItemDetailContent } from "@/components/item-detail-content";
 import { AgeGate } from "@/components/age-gate";
 import { isAgeVerified } from "@/lib/age-verify";
+import { isItemLocked } from "@/lib/item-lock";
 import { CATEGORY_META } from "@/lib/types";
 
 export default async function ItemPage({
@@ -17,7 +18,7 @@ export default async function ItemPage({
   const item = await getItemById(decoded);
   if (!item) notFound();
 
-  if (item.ageLimit && !(await isAgeVerified())) {
+  if (isItemLocked(item, await isAgeVerified())) {
     return (
       <div className="flex-1 min-h-0 overflow-y-auto">
         <AgeGate redirectPath={`/items/${decoded}`} />
