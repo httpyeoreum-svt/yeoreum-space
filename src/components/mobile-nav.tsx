@@ -32,12 +32,13 @@ export function MobileNav() {
           yeoreum space
         </Link>
         <div className="flex items-center gap-1">
-          <button
+          <Link
+            href="/search"
             className="w-9 h-9 flex items-center justify-center text-[color:var(--color-ink)]"
             aria-label="search"
           >
             <Search size={18} strokeWidth={1.5} />
-          </button>
+          </Link>
           <button
             onClick={() => setOpen(true)}
             className="w-9 h-9 border border-[color:var(--color-line)]/60 flex items-center justify-center text-[color:var(--color-ink)]"
