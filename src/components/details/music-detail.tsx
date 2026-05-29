@@ -131,7 +131,7 @@ export async function MusicDetail({
                   <span className="text-[color:var(--color-ink-soft)] tracking-wide">
                     Genre
                   </span>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-nowrap gap-1.5 overflow-x-auto scroll-x min-w-0">
                     {meta.genre
                       .split(",")
                       .map((g) => g.trim())
@@ -139,7 +139,7 @@ export async function MusicDetail({
                       .map((tag, i) => (
                         <span
                           key={`${tag}-${i}`}
-                          className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                          className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)] shrink-0"
                         >
                           #{tag}
                         </span>
@@ -309,11 +309,11 @@ export async function MusicDetail({
           )}
           <TrackInfoTable item={item} meta={meta} />
           {meta?.genre && (
-            <div className="mt-auto pt-3 flex items-baseline gap-x-2 gap-y-1 flex-wrap">
-              <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+            <div className="mt-auto pt-3 flex items-baseline gap-x-2 min-w-0">
+              <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)] shrink-0">
                 Genre
               </span>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-nowrap gap-1.5 overflow-x-auto scroll-x min-w-0">
                 {meta.genre
                   .split(",")
                   .map((g) => g.trim())
@@ -321,7 +321,7 @@ export async function MusicDetail({
                   .map((tag, i) => (
                     <span
                       key={`${tag}-${i}`}
-                      className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                      className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)] shrink-0"
                     >
                       #{tag}
                     </span>
