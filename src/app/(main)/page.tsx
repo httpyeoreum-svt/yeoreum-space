@@ -16,9 +16,11 @@ export default async function Home() {
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/home-bg.png"
+        src="/home-bg.webp"
         alt=""
         aria-hidden
+        loading="lazy"
+        decoding="async"
         className="fixed bottom-0 left-0 lg:left-[260px] z-0 pointer-events-none h-lvh w-auto select-none will-change-transform opacity-60"
       />
       <div className="relative z-10">
