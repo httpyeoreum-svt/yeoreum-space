@@ -246,9 +246,14 @@ function LikedByGrid({
   people: LikedByPerson[];
   memberMap: Map<string, Member>;
 }) {
+  // Order by the MEMBERS master order (memberMap preserves master/insertion order).
+  const order = new Map([...memberMap.keys()].map((name, i) => [name, i] as const));
+  const ordered = [...people].sort(
+    (a, b) => (order.get(a.name) ?? Infinity) - (order.get(b.name) ?? Infinity),
+  );
   return (
     <div className="flex flex-wrap items-start gap-x-4 gap-y-3">
-      {people.map((p) => {
+      {ordered.map((p) => {
         const avatarUrl = p.avatarUrl ?? memberMap.get(p.name)?.avatarUrl;
         const initials = p.name.slice(0, 2).toUpperCase();
         return (
