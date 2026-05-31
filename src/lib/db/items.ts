@@ -1,45 +1,68 @@
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
+import { createAnonClient } from "@/lib/supabase/anon";
 import type { Item, MoodSlug } from "@/lib/types";
 import { rowToItem } from "./transform";
 
 const ITEM_SELECT = "*, item_moods(mood_slug), item_scenes(scene_slug)";
+/** Cross-request Data Cache settings shared by every items read. */
+const ITEMS_TAG = "items";
+const ITEMS_REVALIDATE = 60;
 
-/** All items, sorted by addedAt descending. Cached per request. */
-export const getAllItems = cache(async (): Promise<Item[]> => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("items")
-    .select(ITEM_SELECT)
-    .order("added_at", { ascending: false });
-  if (error) throw error;
-  return (data ?? []).map(rowToItem);
-});
+/**
+ * All items, sorted by addedAt descending.
+ * - `unstable_cache`: persists the Supabase result across requests/deploys
+ *   (≤60s stale) so dynamic pages don't re-fetch the whole table every time.
+ * - `cache`: dedupes repeat calls within a single render.
+ */
+export const getAllItems = cache(
+  unstable_cache(
+    async (): Promise<Item[]> => {
+      const supabase = createAnonClient();
+      const { data, error } = await supabase
+        .from("items")
+        .select(ITEM_SELECT)
+        .order("added_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map(rowToItem);
+    },
+    ["all-items"],
+    { revalidate: ITEMS_REVALIDATE, tags: [ITEMS_TAG] },
+  ),
+);
 
 export const getItemById = cache(
-  async (id: string): Promise<Item | null> => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("items")
-      .select(ITEM_SELECT)
-      .eq("id", id)
-      .maybeSingle();
-    if (error) throw error;
-    return data ? rowToItem(data) : null;
-  },
+  unstable_cache(
+    async (id: string): Promise<Item | null> => {
+      const supabase = createAnonClient();
+      const { data, error } = await supabase
+        .from("items")
+        .select(ITEM_SELECT)
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      return data ? rowToItem(data) : null;
+    },
+    ["item-by-id"],
+    { revalidate: ITEMS_REVALIDATE, tags: [ITEMS_TAG] },
+  ),
 );
 
 export const getRecentItems = cache(
-  async (limit = 6): Promise<Item[]> => {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("items")
-      .select(ITEM_SELECT)
-      .order("added_at", { ascending: false })
-      .limit(limit);
-    if (error) throw error;
-    return (data ?? []).map(rowToItem);
-  },
+  unstable_cache(
+    async (limit = 6): Promise<Item[]> => {
+      const supabase = createAnonClient();
+      const { data, error } = await supabase
+        .from("items")
+        .select(ITEM_SELECT)
+        .order("added_at", { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      return (data ?? []).map(rowToItem);
+    },
+    ["recent-items"],
+    { revalidate: ITEMS_REVALIDATE, tags: [ITEMS_TAG] },
+  ),
 );
 
 export const getGridItems = cache(
@@ -94,22 +117,26 @@ export const getSimilarInCategory = cache(
  * so we just look up `where item_id = X`. Returns [] if no curated links exist.
  */
 export const getCuratedSimilars = cache(
-  async (itemId: string): Promise<Item[]> => {
-    const supabase = await createClient();
-    const { data: links, error: linksError } = await supabase
-      .from("item_similars")
-      .select("similar_id")
-      .eq("item_id", itemId);
-    if (linksError) throw linksError;
+  unstable_cache(
+    async (itemId: string): Promise<Item[]> => {
+      const supabase = createAnonClient();
+      const { data: links, error: linksError } = await supabase
+        .from("item_similars")
+        .select("similar_id")
+        .eq("item_id", itemId);
+      if (linksError) throw linksError;
 
-    const ids = (links ?? []).map((r) => r.similar_id as string);
-    if (ids.length === 0) return [];
+      const ids = (links ?? []).map((r) => r.similar_id as string);
+      if (ids.length === 0) return [];
 
-    const { data, error } = await supabase
-      .from("items")
-      .select(ITEM_SELECT)
-      .in("id", ids);
-    if (error) throw error;
-    return (data ?? []).map(rowToItem);
-  },
+      const { data, error } = await supabase
+        .from("items")
+        .select(ITEM_SELECT)
+        .in("id", ids);
+      if (error) throw error;
+      return (data ?? []).map(rowToItem);
+    },
+    ["curated-similars"],
+    { revalidate: ITEMS_REVALIDATE, tags: [ITEMS_TAG] },
+  ),
 );

@@ -1,5 +1,6 @@
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
+import { createAnonClient } from "@/lib/supabase/anon";
 import type { Member } from "@/lib/types";
 
 function rowToMember(row: Record<string, unknown>): Member {
@@ -10,15 +11,23 @@ function rowToMember(row: Record<string, unknown>): Member {
   };
 }
 
+/**
+ * Raw members list. Cached cross-request via the Data Cache (a plain array is
+ * serializable; a Map is built outside the cache by getMemberMap).
+ */
+const fetchMembers = unstable_cache(
+  async (): Promise<Member[]> => {
+    const supabase = createAnonClient();
+    const { data, error } = await supabase.from("members").select("*");
+    if (error) throw error;
+    return (data ?? []).map(rowToMember);
+  },
+  ["members"],
+  { revalidate: 60, tags: ["members"] },
+);
+
 /** All members, keyed by name for fast avatar lookups. Cached per request. */
 export const getMemberMap = cache(async (): Promise<Map<string, Member>> => {
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("members").select("*");
-  if (error) throw error;
-  const map = new Map<string, Member>();
-  for (const row of data ?? []) {
-    const m = rowToMember(row);
-    map.set(m.name, m);
-  }
-  return map;
+  const members = await fetchMembers();
+  return new Map(members.map((m) => [m.name, m]));
 });
