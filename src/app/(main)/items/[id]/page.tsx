@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getAllItems, getItemById, getRelatedByMood } from "@/lib/db/items";
 import { ItemDetailContent } from "@/components/item-detail-content";
-import { ItemIdPicker } from "@/components/item-id-picker";
 import { ShuffleButton } from "@/components/shuffle-button";
 import { AgeGate } from "@/components/age-gate";
 import { isAgeVerified } from "@/lib/age-verify";
@@ -21,7 +20,8 @@ export default async function ItemPage({
   const item = await getItemById(decoded);
   if (!item) notFound();
 
-  if (isItemLocked(item, await isAgeVerified())) {
+  const ageVerified = await isAgeVerified();
+  if (isItemLocked(item, ageVerified)) {
     return (
       <div className="flex-1 min-h-0 overflow-y-auto">
         <AgeGate redirectPath={`/items/${decoded}`} />
@@ -38,10 +38,12 @@ export default async function ItemPage({
   const allInCategory = allItems
     .filter((i) => i.category === item.category)
     .sort((a, b) => a.id.localeCompare(b.id));
-  const idx = allInCategory.findIndex((i) => i.id === item.id);
-  const prevItem = idx > 0 ? allInCategory[idx - 1] : null;
+  // NEXT / BEFORE / shuffle skip age-restricted items (when not verified).
+  const navigable = allInCategory.filter((i) => !isItemLocked(i, ageVerified));
+  const navIdx = navigable.findIndex((i) => i.id === item.id);
+  const prevItem = navIdx > 0 ? navigable[navIdx - 1] : null;
   const nextItem =
-    idx >= 0 && idx < allInCategory.length - 1 ? allInCategory[idx + 1] : null;
+    navIdx >= 0 && navIdx < navigable.length - 1 ? navigable[navIdx + 1] : null;
 
   // If this music item's creator has a profile page (>= threshold tracks), pass its slug down.
   const profileSlugs =
@@ -70,13 +72,10 @@ export default async function ItemPage({
             {categoryMeta.label}
           </span>
           <span className="text-[color:var(--color-ink-soft)] mx-2">/</span>
-          <ItemIdPicker
-            currentId={item.id}
-            ids={allInCategory.map((i) => i.id)}
-          />
+          <span className="text-[color:var(--color-ink-soft)]">{item.id}</span>
           <ShuffleButton
             currentId={item.id}
-            ids={allInCategory.map((i) => i.id)}
+            ids={navigable.map((i) => i.id)}
           />
         </p>
         {nextItem ? (
