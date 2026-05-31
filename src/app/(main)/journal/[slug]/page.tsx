@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getPostBySlug } from "@/lib/db/posts";
 import { getItemById } from "@/lib/db/items";
+import { isOptimizableImage } from "@/lib/image";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { CategoryLabel } from "@/components/category-label";
 import { formatCardDate } from "@/lib/format";
@@ -61,13 +63,26 @@ export default async function PostPage({
 
         {post.coverImage && (
           <div className="my-6 overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={post.coverImage}
-              alt=""
-              className="w-full h-auto"
-              loading="lazy"
-            />
+            {isOptimizableImage(post.coverImage) ? (
+              // Unknown intrinsic size: nominal width/height sets a placeholder
+              // aspect; `h-auto` lets it scale to the real ratio after load.
+              <Image
+                src={post.coverImage}
+                alt=""
+                width={1200}
+                height={750}
+                sizes="(max-width: 768px) 100vw, 720px"
+                className="w-full h-auto"
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={post.coverImage}
+                alt=""
+                className="w-full h-auto"
+                loading="lazy"
+              />
+            )}
           </div>
         )}
 

@@ -2,6 +2,7 @@ import type { Item, LikedByPerson, Member, PerfumeMeta } from "@/lib/types";
 import { getAllMoods } from "@/lib/db/moods";
 import { getMemberMap } from "@/lib/db/members";
 import { ImagePlaceholder } from "../image-placeholder";
+import { OptimizedImage } from "../optimized-image";
 import { MoodChip } from "../mood-chip";
 import { ItemCardSmall } from "../item-card-small";
 import { formatCardDate } from "@/lib/format";
@@ -39,7 +40,12 @@ export async function GenericDetail({
               : "aspect-[3/4] max-w-[420px]"
           } w-full overflow-hidden border border-[color:var(--color-paper-edge)]`}
         >
-          <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
+          <ImagePlaceholder
+            category={item.category}
+            id={item.id}
+            imageUrl={item.imageUrl}
+            sizes="(max-width: 640px) 100vw, 480px"
+          />
         </div>
       </div>
 
@@ -258,15 +264,9 @@ function LikedByGrid({
         const initials = p.name.slice(0, 2).toUpperCase();
         return (
           <div key={p.name} className="flex flex-col items-center gap-1.5 w-16">
-            <div className="w-14 h-14 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
+            <div className="relative w-14 h-14 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
               {avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={avatarUrl}
-                  alt=""
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
+                <OptimizedImage src={avatarUrl} sizes="56px" />
               ) : (
                 <span className="font-serif text-[13px] tracking-wide text-[color:var(--color-ink-muted)]">
                   {initials}

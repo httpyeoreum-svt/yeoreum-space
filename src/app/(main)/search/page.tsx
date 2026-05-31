@@ -7,6 +7,7 @@ import { isAgeVerified } from "@/lib/age-verify";
 import { isItemLocked } from "@/lib/item-lock";
 import { ItemCardSmall } from "@/components/item-card-small";
 import { SearchBar } from "@/components/search-bar";
+import { OptimizedImage } from "@/components/optimized-image";
 import { formatCardDate } from "@/lib/format";
 import type { Item, Post } from "@/lib/types";
 
@@ -66,14 +67,8 @@ export default async function SearchPage({
                       className="group flex gap-4 py-4 border-b border-[color:var(--color-line)]/30 last:border-b-0 hover:bg-[color:var(--color-cream-soft)]/40 transition px-2 -mx-2"
                     >
                       {post.coverImage && (
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)]">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={post.coverImage}
-                            alt=""
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)]">
+                          <OptimizedImage src={post.coverImage} sizes="80px" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">

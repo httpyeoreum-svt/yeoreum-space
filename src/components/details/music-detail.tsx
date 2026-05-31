@@ -11,6 +11,7 @@ import { getAllMoods } from "@/lib/db/moods";
 import { getAllScenes } from "@/lib/db/scenes";
 import { getMemberMap } from "@/lib/db/members";
 import { ImagePlaceholder } from "../image-placeholder";
+import { OptimizedImage } from "../optimized-image";
 import { MoodChip } from "../mood-chip";
 import { formatCardDate } from "@/lib/format";
 import { flagFromCountryName } from "@/lib/country";
@@ -234,15 +235,9 @@ export async function MusicDetail({
                 <div
                   key={i}
                   style={{ width: "110px", height: "62px" }}
-                  className="shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60"
+                  className="relative shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                  <OptimizedImage src={url} sizes="110px" />
                 </div>
               ))}
             </div>
@@ -262,7 +257,12 @@ export async function MusicDetail({
         </div>
         <div className="flex flex-col gap-3 min-w-0 max-w-[260px] w-full mx-auto @[920px]:mx-0 order-3 @[920px]:order-2">
           <div className="aspect-square w-full overflow-hidden hidden @[920px]:block">
-            <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
+            <ImagePlaceholder
+              category={item.category}
+              id={item.id}
+              imageUrl={item.imageUrl}
+              sizes="260px"
+            />
           </div>
           <KeyCamelotBpm meta={meta} />
           <div className="mt-auto pt-3 flex items-center gap-2 flex-wrap">
@@ -383,15 +383,9 @@ function SampleGallery({ samples }: { samples: string[] }) {
           <div
             key={i}
             style={{ width: "110px", height: "62px" }}
-            className="shrink-0 sm:!w-auto sm:!h-auto sm:aspect-video overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60 snap-center"
+            className="relative shrink-0 sm:!w-auto sm:!h-auto sm:aspect-video overflow-hidden bg-[color:var(--color-cream-deep)] border border-[color:var(--color-paper-edge)]/60 snap-center"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={url}
-              alt={`Sample ${i + 1}`}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+            <OptimizedImage src={url} alt={`Sample ${i + 1}`} sizes="200px" />
           </div>
         ))}
       </div>
@@ -717,10 +711,9 @@ function Avatar({ person, avatarUrl }: { person: LikedByPerson; avatarUrl?: stri
   const initials = person.name.slice(0, 2).toUpperCase();
   return (
     <div className="flex flex-col items-center gap-2 w-24">
-      <div className="w-20 h-20 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
+      <div className="relative w-20 h-20 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
         {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={avatarUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+          <OptimizedImage src={avatarUrl} sizes="80px" />
         ) : (
           <span className="font-serif text-[16px] tracking-wide text-[color:var(--color-ink-muted)]">
             {initials}
@@ -816,10 +809,9 @@ function InlineMember({ name, avatarUrl }: { name: string; avatarUrl?: string })
   const initials = name.slice(0, 2).toUpperCase();
   return (
     <div className="flex items-center gap-2">
-      <div className="w-10 h-10 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
+      <div className="relative w-10 h-10 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
         {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={avatarUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+          <OptimizedImage src={avatarUrl} sizes="40px" />
         ) : (
           <span className="font-serif text-[12px] tracking-wide text-[color:var(--color-ink-muted)]">
             {initials}
