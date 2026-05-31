@@ -98,10 +98,13 @@ export async function MusicDetail({
           MOBILE / TABLET (<lg) LAYOUT
           ============================ */}
       <div className="lg:hidden flex flex-col gap-4 px-4 pt-2 pb-[88px]">
-        <YouTubeEmbed url={meta?.mvUrl} title={item.title} color={meta?.color} />
-        <TitleBlock item={item} meta={meta} artistSlug={artistSlug} />
-        <div className="-mt-3">
         <MusicTabs
+          header={
+            <>
+              <YouTubeEmbed url={meta?.mvUrl} title={item.title} color={meta?.color} />
+              <TitleBlock item={item} meta={meta} artistSlug={artistSlug} />
+            </>
+          }
           counts={{
             cover: hasCover ? 1 : 0,
             liked: meta?.likedBy?.length ?? 0,
@@ -215,7 +218,6 @@ export async function MusicDetail({
             )
           }
         />
-        </div>{/* end MusicTabs wrapper (negative top margin) */}
         {hasSamples && (
           <div
             className="fixed bottom-0 left-0 right-0 z-30 border-t border-[color:var(--color-line)]/50 px-3 py-2 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] overflow-hidden"
@@ -653,6 +655,11 @@ function LikedBy({
   url?: string;
   memberMap: Map<string, Member>;
 }) {
+  // Order by the MEMBERS master order (memberMap preserves master/insertion order).
+  const order = new Map([...memberMap.keys()].map((name, i) => [name, i] as const));
+  const ordered = [...people].sort(
+    (a, b) => (order.get(a.name) ?? Infinity) - (order.get(b.name) ?? Infinity),
+  );
   return (
     <section>
       <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
@@ -677,7 +684,7 @@ function LikedBy({
         )}
       </div>
       <div className="flex flex-wrap items-start gap-x-5 gap-y-3">
-        {people.map((p) => (
+        {ordered.map((p) => (
           <Avatar
             key={p.name}
             person={p}

@@ -12,12 +12,15 @@ const TABS = [
 type TabKey = (typeof TABS)[number]["key"];
 
 export function MusicTabs({
+  header,
   trackInfo,
   cover,
   liked,
   similar,
   counts,
 }: {
+  /** Pinned above the tab bar (MV + title). Stays fixed while content scrolls. */
+  header?: ReactNode;
   trackInfo: ReactNode;
   cover: ReactNode;
   liked: ReactNode;
@@ -28,7 +31,10 @@ export function MusicTabs({
 
   return (
     <div className="flex flex-col">
-      <div className="flex border-b border-[color:var(--color-line)]/50">
+      {/* MV + title + tab bar stay pinned to the top; only content below scrolls. */}
+      <div className="sticky top-0 z-20 -mx-4 px-4 bg-[color:var(--color-cream)]/95 backdrop-blur-sm">
+        {header && <div className="flex flex-col gap-4 pt-1 pb-3">{header}</div>}
+        <div className="flex border-b border-[color:var(--color-line)]/50">
         {TABS.map((t) => {
           const count = counts?.[t.key] ?? 0;
           return (
@@ -51,6 +57,7 @@ export function MusicTabs({
             </button>
           );
         })}
+        </div>
       </div>
       <div key={tab} className="pt-4 animate-[fadeIn_180ms_ease-out]">
         {tab === "info" && trackInfo}
