@@ -33,7 +33,7 @@ export function MusicTabs({
     <div className="flex flex-col">
       {/* MV + title + tab bar stay pinned to the top; only content below scrolls. */}
       <div className="sticky top-0 z-20 -mx-4 px-4 bg-[color:var(--color-cream)]/95 backdrop-blur-sm">
-        {header && <div className="flex flex-col gap-4 pt-1 pb-3">{header}</div>}
+        {header && <div className="flex flex-col gap-4 pt-1 pb-1">{header}</div>}
         <div className="flex border-b border-[color:var(--color-line)]/50">
         {TABS.map((t) => {
           const count = counts?.[t.key] ?? 0;
