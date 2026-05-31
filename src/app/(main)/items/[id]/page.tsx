@@ -37,6 +37,7 @@ export default async function ItemPage({
     .filter((i) => i.category === item.category)
     .sort((a, b) => a.id.localeCompare(b.id));
   const idx = allInCategory.findIndex((i) => i.id === item.id);
+  const prevItem = idx > 0 ? allInCategory[idx - 1] : null;
   const nextItem =
     idx >= 0 && idx < allInCategory.length - 1 ? allInCategory[idx + 1] : null;
 
@@ -51,14 +52,17 @@ export default async function ItemPage({
   return (
     <div className="flex-1 min-h-0 overflow-y-auto overscroll-y-none">
       <div className="px-4 sm:px-6 md:px-8 pt-3 pb-1 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-        <Link
-          href="/"
-          className="justify-self-start inline-flex items-center gap-2 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)] transition"
-        >
-          <ArrowLeft size={12} strokeWidth={1.5} />
-          <span className="lg:hidden">BACK</span>
-          <span className="hidden lg:inline">BACK TO COLLECTION</span>
-        </Link>
+        {prevItem ? (
+          <Link
+            href={`/items/${prevItem.id}`}
+            className="justify-self-start inline-flex items-center gap-2 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)] transition"
+          >
+            <ArrowLeft size={12} strokeWidth={1.5} />
+            BACK
+          </Link>
+        ) : (
+          <span />
+        )}
         <p className="text-[10px] tracking-[0.3em] text-center">
           <span style={{ color: categoryMeta.accentVar }} className="font-medium">
             {categoryMeta.label}
