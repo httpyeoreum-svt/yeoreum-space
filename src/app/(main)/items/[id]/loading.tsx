@@ -1,8 +1,8 @@
 import { PageLoading } from "@/components/page-loading";
 
 /**
- * Shown instantly during client navigation between (main) routes while the
- * target server component streams in.
+ * Ensures NEXT / BEFORE navigation between songs (same [id] segment) shows the
+ * loading cue while the next item streams in.
  */
 export default function Loading() {
   return <PageLoading />;
