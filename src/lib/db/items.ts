@@ -35,7 +35,7 @@ export const getRecentItems = cache(
     const { data, error } = await supabase
       .from("items")
       .select(ITEM_SELECT)
-      .order("updated_at", { ascending: false })
+      .order("added_at", { ascending: false })
       .limit(limit);
     if (error) throw error;
     return (data ?? []).map(rowToItem);
