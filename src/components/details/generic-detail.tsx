@@ -18,11 +18,13 @@ export async function GenericDetail({
 }) {
   const moods = await getAllMoods();
   const ageVerified = await isAgeVerified();
-  const needsMembers =
-    item.meta?.category === "perfume" &&
-    item.meta.likedBy &&
-    item.meta.likedBy.length > 0;
-  const memberMap = needsMembers ? await getMemberMap() : null;
+  // Liked by is shared across perfume / books / films (music has its own layout).
+  const likedBy =
+    item.meta && "likedBy" in item.meta ? item.meta.likedBy : undefined;
+  const likedByGroup =
+    item.meta && "likedByGroup" in item.meta ? item.meta.likedByGroup : undefined;
+  const hasLikedBy = Boolean(likedBy && likedBy.length > 0);
+  const memberMap = hasLikedBy ? await getMemberMap() : null;
   const moodObjs = item.moods
     .map((slug) => moods.find((m) => m.slug === slug))
     .filter((m): m is NonNullable<typeof m> => Boolean(m));
@@ -94,24 +96,21 @@ export async function GenericDetail({
         </div>
       )}
 
-      {item.meta?.category === "perfume" &&
-        item.meta.likedBy &&
-        item.meta.likedBy.length > 0 &&
-        memberMap && (
-          <div className="px-4 sm:px-6 md:px-8 pb-7 pt-5 border-t border-dashed border-[color:var(--color-paper-edge)] mx-4 sm:mx-6 md:mx-8">
-            <div className="flex items-baseline gap-3 flex-wrap mb-3">
-              <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
-                LIKED BY
+      {hasLikedBy && memberMap && (
+        <div className="px-4 sm:px-6 md:px-8 pb-7 pt-5 border-t border-dashed border-[color:var(--color-paper-edge)] mx-4 sm:mx-6 md:mx-8">
+          <div className="flex items-baseline gap-3 flex-wrap mb-3">
+            <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+              LIKED BY
+            </p>
+            {likedByGroup && (
+              <p className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-muted)]">
+                {likedByGroup}
               </p>
-              {item.meta.likedByGroup && (
-                <p className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-muted)]">
-                  {item.meta.likedByGroup}
-                </p>
-              )}
-            </div>
-            <PerfumeLikedBy people={item.meta.likedBy} memberMap={memberMap} />
+            )}
           </div>
-        )}
+          <LikedByGrid people={likedBy!} memberMap={memberMap} />
+        </div>
+      )}
 
       {related.length > 0 && (
         <div className="px-4 sm:px-6 md:px-8 pt-5 pb-7 border-t border-[color:var(--color-line)]/40 bg-[color:var(--color-cream-soft)]/40">
@@ -240,7 +239,7 @@ function PerfumeMetaBlock({ meta }: { meta: PerfumeMeta }) {
   );
 }
 
-function PerfumeLikedBy({
+function LikedByGrid({
   people,
   memberMap,
 }: {

@@ -141,6 +141,10 @@ export type BooksMeta = {
   genre?: string;
   /** @deprecated — superseded by releaseDate. Kept for legacy rows. */
   year?: number;
+  /** Members who like / recommend this book. */
+  likedBy?: LikedByPerson[];
+  /** Group header for likedBy, e.g. "SEVENTEEN". */
+  likedByGroup?: string;
 };
 
 export type FilmsMeta = {
@@ -148,6 +152,10 @@ export type FilmsMeta = {
   director?: string;
   year?: number;
   runtime?: number;
+  /** Members who like / recommend this film. */
+  likedBy?: LikedByPerson[];
+  /** Group header for likedBy, e.g. "SEVENTEEN". */
+  likedByGroup?: string;
 };
 
 export type PerfumeMeta = {
