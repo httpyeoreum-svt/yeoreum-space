@@ -1,33 +1,33 @@
 import type { Category } from "@/lib/types";
 import { CATEGORY_META } from "@/lib/types";
+import { OptimizedImage } from "./optimized-image";
 
 /**
  * Renders the item's uploaded image when `imageUrl` is present,
  * otherwise falls back to a category-tinted gradient stand-in.
+ *
+ * `sizes` should describe the rendered width at each breakpoint so next/image
+ * picks an appropriately small file (defaults to a card-sized hint).
  */
 export function ImagePlaceholder({
   category,
   id,
   imageUrl,
   className = "",
+  sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 240px",
 }: {
   category: Category;
   id: string;
   imageUrl?: string | null;
   className?: string;
+  sizes?: string;
 }) {
   if (imageUrl) {
     return (
       <div
         className={`relative w-full h-full overflow-hidden bg-[color:var(--color-cream-deep)] ${className}`}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageUrl}
-          alt=""
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
+        <OptimizedImage src={imageUrl} sizes={sizes} />
       </div>
     );
   }
