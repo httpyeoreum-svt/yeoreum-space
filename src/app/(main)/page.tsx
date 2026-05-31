@@ -14,7 +14,7 @@ export default async function Home() {
   ]);
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {/* 背景画像は一旦オフ。戻すときは下のコメントを解除。
       <img
         src="/home-bg.webp"
         alt=""
@@ -22,7 +22,7 @@ export default async function Home() {
         loading="lazy"
         decoding="async"
         className="fixed bottom-0 left-0 lg:left-[260px] z-0 pointer-events-none h-lvh w-auto select-none will-change-transform opacity-60"
-      />
+      /> */}
       <div className="relative z-10">
         <RecentlyAdded items={recent} />
         <MoodBar />
