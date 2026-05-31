@@ -30,7 +30,7 @@ export default async function MoodsPage() {
             <Link
               key={mood.slug}
               href={`/moods/${mood.slug}`}
-              className="group block p-5 transition hover:brightness-95 min-h-[240px] flex flex-col"
+              className="tap group block p-5 transition hover:brightness-95 min-h-[240px] flex flex-col"
               style={{ backgroundColor: mood.bg }}
             >
               <div className="flex-1">

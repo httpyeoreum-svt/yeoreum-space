@@ -112,7 +112,7 @@ export function CategoryGrid({
                 <li key={item.id}>
                   <Link
                     href={`/items/${item.id}`}
-                    className="group flex items-center gap-3 py-2.5 hover:bg-[color:var(--color-cream-soft)]/50 transition px-1"
+                    className="tap group flex items-center gap-3 py-2.5 hover:bg-[color:var(--color-cream-soft)]/50 transition px-1"
                   >
                     <div className="w-12 h-12 shrink-0 overflow-hidden">
                       <div className={locked ? "w-full h-full blur-xl scale-110" : "w-full h-full"}>

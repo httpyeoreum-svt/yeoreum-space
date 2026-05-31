@@ -30,7 +30,7 @@ export default async function JournalPage() {
               <li key={post.slug}>
                 <Link
                   href={`/journal/${post.slug}`}
-                  className="group flex gap-4 py-5 border-b border-[color:var(--color-line)]/30 last:border-b-0 hover:bg-[color:var(--color-cream-soft)]/40 transition px-2 -mx-2"
+                  className="tap group flex gap-4 py-5 border-b border-[color:var(--color-line)]/30 last:border-b-0 hover:bg-[color:var(--color-cream-soft)]/40 transition px-2 -mx-2"
                 >
                   {post.coverImage && (
                     <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden bg-[color:var(--color-cream-deep)]">

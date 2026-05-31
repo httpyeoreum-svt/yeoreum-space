@@ -35,7 +35,7 @@ export default async function ListsPage() {
           <Link
             key={list.slug}
             href={`/lists/${list.slug}`}
-            className="group block bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)]/60 p-5 transition hover:shadow-sm hover:border-[color:var(--color-line)]"
+            className="tap group block bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)]/60 p-5 transition hover:shadow-sm hover:border-[color:var(--color-line)]"
           >
             {themeMood && (
               <div className="flex items-center gap-1.5 mb-3">

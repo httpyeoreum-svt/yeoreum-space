@@ -105,6 +105,39 @@ body::before {
   display: none;
 }
 
+/*
+ * Tactile feedback — every button gets a quick press-scale, and clickable
+ * cards/links can opt in with `.tap`. Respects reduced-motion preferences.
+ */
+@layer base {
+  button {
+    transition: transform 130ms ease, opacity 150ms ease;
+  }
+  button:not(:disabled):active {
+    transform: scale(0.95);
+  }
+}
+
+.tap {
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+.tap:active {
+  transform: scale(0.975);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):active,
+  .tap:active {
+    transform: none;
+  }
+}
+
+/* Route loading indicator */
+@keyframes loadingBar {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
 /* Tab content fade-in */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(2px); }

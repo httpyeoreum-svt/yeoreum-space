@@ -11,7 +11,7 @@ import { formatCardDate } from "@/lib/format";
  */
 export function ItemCardLarge({ item, locked }: { item: Item; locked?: boolean }) {
   return (
-    <Link href={`/items/${item.id}`} className="flex-none w-[110px] group">
+    <Link href={`/items/${item.id}`} className="tap flex-none w-[110px] group">
       <div className="aspect-[4/5] w-full overflow-hidden border border-transparent group-hover:border-[color:var(--color-line)] transition relative">
         <div className={locked ? "w-full h-full blur-xl scale-110" : "w-full h-full"}>
           <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />

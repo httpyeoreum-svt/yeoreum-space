@@ -69,7 +69,7 @@ export default async function ListPage({
             <span className="text-[10px] tracking-wide text-[color:var(--color-ink-soft)] tabular-nums w-6 pt-1">
               {String(i + 1).padStart(2, "0")}
             </span>
-            <Link href={`/items/${item.id}`} className="flex gap-4 flex-1 min-w-0">
+            <Link href={`/items/${item.id}`} className="tap flex gap-4 flex-1 min-w-0">
               <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 overflow-hidden">
                 <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
               </div>

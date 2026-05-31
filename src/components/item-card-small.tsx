@@ -15,7 +15,7 @@ export function ItemCardSmall({ item, locked }: { item: Item; locked?: boolean }
   return (
     <Link
       href={`/items/${item.id}`}
-      className="card-notch group relative block bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)]/60 p-2.5 transition hover:shadow-sm hover:border-[color:var(--color-line)]"
+      className="tap card-notch group relative block bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)]/60 p-2.5 hover:shadow-sm hover:border-[color:var(--color-line)]"
     >
       <header className="flex items-center justify-between pb-1.5">
         <span className="text-[8px] tracking-[0.2em] text-[color:var(--color-ink-soft)]">
