@@ -187,6 +187,7 @@ export async function MusicDetail({
                 videoUrl={meta?.cover?.videoUrl}
                 members={meta?.cover?.members}
                 memberMap={memberMap}
+                hideHeading
               />
             ) : (
               <p className="text-[12px] text-[color:var(--color-ink-soft)]">
@@ -201,6 +202,7 @@ export async function MusicDetail({
                 group={meta?.likedByGroup}
                 url={meta?.playlistNoteUrl}
                 memberMap={memberMap}
+                hideHeading
               />
             ) : (
               <p className="text-[12px] text-[color:var(--color-ink-soft)]">
@@ -210,7 +212,7 @@ export async function MusicDetail({
           }
           similar={
             similar.length > 0 ? (
-              <SimilarSongs items={similar} />
+              <SimilarSongs items={similar} hideHeading />
             ) : (
               <p className="text-[12px] text-[color:var(--color-ink-soft)]">
                 No similar songs yet.
@@ -649,28 +651,42 @@ function LikedBy({
   group,
   url,
   memberMap,
+  hideHeading,
 }: {
   people: LikedByPerson[];
   group?: string;
   url?: string;
   memberMap: Map<string, Member>;
+  hideHeading?: boolean;
 }) {
   // Order by the MEMBERS master order (memberMap preserves master/insertion order).
   const order = new Map([...memberMap.keys()].map((name, i) => [name, i] as const));
   const ordered = [...people].sort(
     (a, b) => (order.get(a.name) ?? Infinity) - (order.get(b.name) ?? Infinity),
   );
+  // When the heading is hidden (inside a tab), still surface group / playlist
+  // link if present; otherwise the header row collapses entirely.
+  const showHeaderRow = !hideHeading || Boolean(group) || Boolean(url);
   return (
     <section>
+      {showHeaderRow && (
       <div className="flex items-baseline justify-between mb-3 gap-3 flex-wrap">
-        <h3 className="font-serif text-[20px] text-[color:var(--color-ink)]">
-          Liked by{" "}
-          {group && (
-            <span className="ml-2 text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)] align-middle">
-              {group}
-            </span>
-          )}
-        </h3>
+        {!hideHeading ? (
+          <h3 className="font-serif text-[20px] text-[color:var(--color-ink)]">
+            Liked by{" "}
+            {group && (
+              <span className="ml-2 text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)] align-middle">
+                {group}
+              </span>
+            )}
+          </h3>
+        ) : group ? (
+          <span className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+            {group}
+          </span>
+        ) : (
+          <span />
+        )}
         {url && (
           <a
             href={url}
@@ -683,6 +699,7 @@ function LikedBy({
           </a>
         )}
       </div>
+      )}
       <div className="flex flex-wrap items-start gap-x-5 gap-y-3">
         {ordered.map((p) => (
           <Avatar
@@ -741,16 +758,20 @@ function CoverSection({
   videoUrl,
   members,
   memberMap,
+  hideHeading,
 }: {
   videoUrl?: string;
   members?: string[];
   memberMap: Map<string, Member>;
+  hideHeading?: boolean;
 }) {
   const ytId = youtubeVideoId(videoUrl);
   return (
     <section>
       <div className="flex items-center gap-x-5 gap-y-2 mb-3 flex-wrap">
-        <h3 className="font-serif text-[28px] @md:text-[32px] text-[color:var(--color-ink)] leading-none">Cover</h3>
+        {!hideHeading && (
+          <h3 className="font-serif text-[28px] @md:text-[32px] text-[color:var(--color-ink)] leading-none">Cover</h3>
+        )}
         {members && members.length > 0 && (
           <div className="flex items-center gap-x-4 gap-y-2 flex-wrap">
             {members.map((name) => (
@@ -810,10 +831,12 @@ function InlineMember({ name, avatarUrl }: { name: string; avatarUrl?: string })
   );
 }
 
-function SimilarSongs({ items }: { items: Item[] }) {
+function SimilarSongs({ items, hideHeading }: { items: Item[]; hideHeading?: boolean }) {
   return (
     <section>
-      <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Similar Songs</h3>
+      {!hideHeading && (
+        <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Similar Songs</h3>
+      )}
       <ul className="grid grid-cols-2 gap-x-3">
         {items.map((s) => (
           <li
