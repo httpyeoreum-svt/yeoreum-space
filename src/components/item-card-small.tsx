@@ -23,7 +23,11 @@ export function ItemCardSmall({ item, locked }: { item: Item; locked?: boolean }
         </span>
         <CategoryLabel category={item.category} className="!text-[7px] !tracking-[0.15em]" />
       </header>
-      <div className="aspect-square w-full overflow-hidden relative">
+      <div
+        className={`${
+          item.category === "books" ? "aspect-[3/4]" : "aspect-square"
+        } w-full overflow-hidden relative`}
+      >
         <div className={locked ? "w-full h-full blur-xl scale-110" : "w-full h-full"}>
           <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
         </div>
