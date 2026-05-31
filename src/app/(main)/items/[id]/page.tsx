@@ -58,7 +58,7 @@ export default async function ItemPage({
             className="justify-self-start inline-flex items-center gap-2 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)] transition"
           >
             <ArrowLeft size={12} strokeWidth={1.5} />
-            BACK
+            BEFORE
           </Link>
         ) : (
           <span />
