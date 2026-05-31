@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getAllItems, getItemById, getRelatedByMood } from "@/lib/db/items";
 import { ItemDetailContent } from "@/components/item-detail-content";
+import { ItemIdPicker } from "@/components/item-id-picker";
 import { AgeGate } from "@/components/age-gate";
 import { isAgeVerified } from "@/lib/age-verify";
 import { isItemLocked } from "@/lib/item-lock";
@@ -68,7 +69,10 @@ export default async function ItemPage({
             {categoryMeta.label}
           </span>
           <span className="text-[color:var(--color-ink-soft)] mx-2">/</span>
-          <span className="text-[color:var(--color-ink-soft)]">{item.id}</span>
+          <ItemIdPicker
+            currentId={item.id}
+            ids={allInCategory.map((i) => i.id)}
+          />
         </p>
         {nextItem ? (
           <Link
