@@ -551,6 +551,12 @@ function TrackInfoTable({ item, meta }: { item: Item; meta?: MusicMeta }) {
   return (
     <section>
       <dl className="text-[11px]">
+        {meta?.themeSong && (
+          <div className={rowCls}>
+            <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Theme</dt>
+            <dd className="text-[color:var(--color-ink)] break-words">{meta.themeSong}</dd>
+          </div>
+        )}
         {meta?.album && (
           <div className={rowCls}>
             <dt className="text-[color:var(--color-ink-soft)] tracking-wide">Album</dt>

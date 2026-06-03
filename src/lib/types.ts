@@ -78,6 +78,8 @@ export type MusicMeta = {
   category: "music";
   album?: string;
   releaseDate?: string;
+  /** Work this song is the theme / title song for, e.g. "アニメ『◯◯』主題歌". */
+  themeSong?: string;
   /** "Indie / Dream Pop" — free-form. */
   genre?: string;
   /** Track length as "mm:ss". */
