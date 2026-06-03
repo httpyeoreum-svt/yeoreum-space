@@ -69,7 +69,7 @@ export type Member = {
 
 /** Bilingual short lyric / passage excerpt. */
 export type LyricExcerpt = {
-  original: string;
+  original?: string;
   japanese?: string;
 };
 

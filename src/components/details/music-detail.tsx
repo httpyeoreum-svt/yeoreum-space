@@ -93,7 +93,9 @@ export async function MusicDetail({
   );
   const hasLiked = Boolean(meta?.likedBy && meta.likedBy.length > 0);
   const hasSamples = Boolean(meta?.samples && meta.samples.length > 0);
-  const hasLyric = Boolean(meta?.lyricExcerpt?.original);
+  const hasLyric = Boolean(
+    meta?.lyricExcerpt?.original || meta?.lyricExcerpt?.japanese,
+  );
 
   return (
     <div className="@container">

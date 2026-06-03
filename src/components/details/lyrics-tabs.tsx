@@ -8,9 +8,14 @@ import type { LyricExcerpt } from "@/lib/types";
  * Japanese translation exists; otherwise the original is shown on its own.
  */
 export function LyricsTabs({ lyric }: { lyric: LyricExcerpt }) {
-  const [tab, setTab] = useState<"original" | "jp">("original");
-  const jpMissing = tab === "jp" && !lyric.japanese;
+  // Default to whichever language is registered (prefer the original).
+  const [tab, setTab] = useState<"original" | "jp">(
+    lyric.original ? "original" : "jp",
+  );
   const text = tab === "jp" ? lyric.japanese : lyric.original;
+  const missing = !text;
+  const placeholder =
+    tab === "jp" ? "日本語訳は未登録です" : "原文は未登録です";
 
   return (
     <section>
@@ -37,12 +42,12 @@ export function LyricsTabs({ lyric }: { lyric: LyricExcerpt }) {
         ))}
       </div>
       <div className="relative bg-[color:var(--color-paper)] border border-[color:var(--color-paper-edge)] p-4">
-        {jpMissing ? (
+        {missing ? (
           <p
-            key="jp-missing"
+            key={`${tab}-missing`}
             className="text-[12px] text-[color:var(--color-ink-soft)] italic animate-[fadeIn_180ms_ease-out]"
           >
-            日本語訳は未登録です
+            {placeholder}
           </p>
         ) : (
           <p
