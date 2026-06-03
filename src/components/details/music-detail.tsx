@@ -17,6 +17,7 @@ import { formatCardDate } from "@/lib/format";
 import { flagFromCountryName } from "@/lib/country";
 import { youtubeVideoId } from "@/lib/youtube";
 import { MusicTabs } from "./music-tabs";
+import { LyricsTabs } from "./lyrics-tabs";
 
 const EXTERNAL_ICON = (
   <svg
@@ -92,6 +93,7 @@ export async function MusicDetail({
   );
   const hasLiked = Boolean(meta?.likedBy && meta.likedBy.length > 0);
   const hasSamples = Boolean(meta?.samples && meta.samples.length > 0);
+  const hasLyric = Boolean(meta?.lyricExcerpt?.original);
 
   return (
     <div className="@container">
@@ -107,10 +109,20 @@ export async function MusicDetail({
             </>
           }
           counts={{
+            lyrics: hasLyric ? 1 : 0,
             cover: hasCover ? 1 : 0,
             liked: meta?.likedBy?.length ?? 0,
             similar: similar.length,
           }}
+          lyrics={
+            hasLyric ? (
+              <LyricsTabs lyric={meta!.lyricExcerpt!} />
+            ) : (
+              <p className="text-[12px] text-[color:var(--color-ink-soft)]">
+                No lyrics yet.
+              </p>
+            )
+          }
           trackInfo={
             <div className="flex flex-col">
               {meta?.recommendation && (
@@ -345,6 +357,7 @@ export async function MusicDetail({
 
       <div className="px-4 sm:px-6 md:px-8">
         <div className="flex flex-col gap-6 min-w-0 @container">
+          {hasLyric && <LyricsTabs lyric={meta!.lyricExcerpt!} />}
           {((meta?.samples && meta.samples.length > 0) ||
             (meta?.likedBy && meta.likedBy.length > 0) ||
             similar.length > 0) && (

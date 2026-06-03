@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 
 const TABS = [
   { key: "info", label: "Info" },
+  { key: "lyrics", label: "Lyrics" },
   { key: "cover", label: "Cover" },
   { key: "liked", label: "Liked" },
   { key: "similar", label: "Similar" },
@@ -14,6 +15,7 @@ type TabKey = (typeof TABS)[number]["key"];
 export function MusicTabs({
   header,
   trackInfo,
+  lyrics,
   cover,
   liked,
   similar,
@@ -22,6 +24,7 @@ export function MusicTabs({
   /** Pinned above the tab bar (MV + title). Stays fixed while content scrolls. */
   header?: ReactNode;
   trackInfo: ReactNode;
+  lyrics: ReactNode;
   cover: ReactNode;
   liked: ReactNode;
   similar: ReactNode;
@@ -61,6 +64,7 @@ export function MusicTabs({
       </div>
       <div key={tab} className="pt-4 animate-[fadeIn_180ms_ease-out]">
         {tab === "info" && trackInfo}
+        {tab === "lyrics" && lyrics}
         {tab === "cover" && cover}
         {tab === "liked" && liked}
         {tab === "similar" && similar}
