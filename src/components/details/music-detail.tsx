@@ -111,7 +111,6 @@ export async function MusicDetail({
             </>
           }
           counts={{
-            lyrics: hasLyric ? 1 : 0,
             cover: hasCover ? 1 : 0,
             liked: meta?.likedBy?.length ?? 0,
             similar: similar.length,
@@ -456,9 +455,16 @@ function TitleBlock({
     </>
   );
   const hasListen = Boolean(meta?.appleMusicUrl || meta?.spotifyUrl);
+  // Song's palette color tints a translucent band behind the title / artist.
+  const tint = meta?.color ? withAlpha(meta.color, 0.35) : null;
 
   return (
-    <div className="pb-1 border-b border-[color:var(--color-line)]/50">
+    <div
+      className={`border-b border-[color:var(--color-line)]/50 ${
+        tint ? "-mx-3 px-3 pt-2.5 pb-2.5 rounded-t-md" : "pb-1"
+      }`}
+      style={tint ? { backgroundColor: tint } : undefined}
+    >
       {/* Mobile/Tablet (<lg): Title + Creator left, Listen icons right (after creator). */}
       <div className="flex items-baseline gap-x-4 gap-y-1 flex-wrap lg:block">
         <h2 className="font-serif text-[28px] @md:text-[36px] @xl:text-[44px] leading-[1.05] tracking-tight text-[color:var(--color-ink)] break-words">
