@@ -57,7 +57,7 @@ export function LyricsTabs({ lyric }: { lyric: LyricExcerpt }) {
         ) : (
           <p
             key={tab}
-            className="font-serif text-[13px] leading-relaxed text-[color:var(--color-ink)] whitespace-pre-line animate-[fadeIn_180ms_ease-out]"
+            className="font-serif text-[11px] leading-[2] tracking-[0.05em] text-[color:var(--color-ink)] whitespace-pre-line animate-[fadeIn_180ms_ease-out]"
           >
             {text}
           </p>
