@@ -44,7 +44,7 @@ export default async function SearchPage({
               (filteredPosts.length > 0 && filtered.length > 0
                 ? ` (${filtered.length} items, ${filteredPosts.length} journal)`
                 : "")
-            : "Search across titles, creators, ids, moods, members, and journal posts."}
+            : "Search across titles, creators, ids, moods, members, lyrics, and journal posts."}
         </p>
       </header>
       <section className="px-6 pt-1 pb-4">
@@ -182,6 +182,12 @@ function filterItems(
         return true;
       }
       if (m.cover?.members?.some((name) => name.toLowerCase().includes(q))) {
+        return true;
+      }
+      if (
+        m.lyricExcerpt?.original?.toLowerCase().includes(q) ||
+        m.lyricExcerpt?.japanese?.toLowerCase().includes(q)
+      ) {
         return true;
       }
     }
