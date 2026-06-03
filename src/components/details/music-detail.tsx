@@ -863,7 +863,7 @@ function SimilarSongs({ items, hideHeading }: { items: Item[]; hideHeading?: boo
                 <ImagePlaceholder category={s.category} id={s.id} imageUrl={s.imageUrl} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-serif text-[12px] leading-tight text-[color:var(--color-ink)] truncate group-hover:underline underline-offset-2">
+                <p className="font-serif text-[11px] leading-tight text-[color:var(--color-ink)] truncate group-hover:underline underline-offset-2">
                   {s.title}
                 </p>
                 <p className="font-serif text-[10px] text-[color:var(--color-ink-muted)] truncate mt-0.5">
