@@ -236,3 +236,20 @@ export type Post = {
   createdAt: string;
   updatedAt: string;
 };
+
+/** Self-authored short fiction. Same shape as Post, minus related items. */
+export type Novel = {
+  slug: string;
+  title: string;
+  /** Rich HTML produced by the WYSIWYG editor on the admin side. */
+  content: string;
+  excerpt?: string;
+  coverImage?: string;
+  status: PostStatus;
+  publishedAt?: string;
+  tags: string[];
+  /** Tagged member names (referencing the members registry). */
+  members: string[];
+  createdAt: string;
+  updatedAt: string;
+};

@@ -8,18 +8,20 @@ import {
   LayoutGrid,
   MessageSquareQuote,
   NotebookText,
+  BookText,
   ListOrdered,
   Info,
   Sun,
 } from "lucide-react";
-import { OWNER, QUOTE } from "@/lib/data";
-import { formatSlashDate, formatLongDate } from "@/lib/format";
+import { QUOTE } from "@/lib/data";
+import { formatLongDate } from "@/lib/format";
 
 const NAV = [
   { label: "HOME",       icon: Home,                href: "/" },
   { label: "COLLECTION", icon: LayoutGrid,          href: "/collection" },
   { label: "MOODS",      icon: MessageSquareQuote,  href: "/moods" },
   { label: "JOURNAL",    icon: NotebookText,        href: "/journal" },
+  { label: "NOVELS",     icon: BookText,            href: "/novels" },
   { label: "LISTS",      icon: ListOrdered,         href: "/lists" },
   { label: "ABOUT",      icon: Info,                href: "/about" },
 ];
@@ -51,18 +53,6 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           yeoreum space
         </h1>
       </Link>
-
-      <div className="bg-[color:var(--color-cream-soft)] border border-[color:var(--color-line)]/60 px-3 py-3 mb-4 text-[10px] tracking-[0.1em] leading-tight">
-        <p className="text-[8px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">OWNER</p>
-        <p className="text-[color:var(--color-ink)] mb-2">{OWNER.handle}</p>
-        <p className="text-[8px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">CATALOG ID</p>
-        <p className="text-[color:var(--color-ink)] mb-2">{OWNER.catalogId}</p>
-        <p className="text-[8px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">MEMBER SINCE</p>
-        <div className="flex items-baseline justify-between">
-          <p className="text-[color:var(--color-ink)]">{formatSlashDate(OWNER.memberSince)}</p>
-          <p className="text-[color:var(--color-cat-music)] font-medium">{OWNER.memberNo}</p>
-        </div>
-      </div>
 
       <nav className="flex flex-col gap-0.5 mb-auto">
         {NAV.map((n) => {
