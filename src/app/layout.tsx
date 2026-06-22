@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, JetBrains_Mono, Noto_Serif_JP } from "next/font/google";
+import { Cormorant_Garamond, JetBrains_Mono, Noto_Serif_JP, Petit_Formal_Script } from "next/font/google";
 import "./globals.css";
+import { IntroOverlay } from "@/components/intro-overlay";
 
 const serif = Cormorant_Garamond({
   variable: "--font-serif-var",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
+});
+
+// Handwritten cursive used for the "yeoreum space" wordmark in the home hero.
+const script = Petit_Formal_Script({
+  variable: "--font-script-var",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const mono = JetBrains_Mono({
@@ -35,10 +43,12 @@ export default function RootLayout({
   return (
     <html
       lang="ja"
-      className={`${serif.variable} ${mono.variable} ${jpSerif.variable} h-full antialiased`}
+      className={`${serif.variable} ${mono.variable} ${jpSerif.variable} ${script.variable} h-full antialiased`}
     >
       <body className="min-h-full font-mono" suppressHydrationWarning>
+        <div className="site-bg" aria-hidden />
         {children}
+        <IntroOverlay />
       </body>
     </html>
   );
