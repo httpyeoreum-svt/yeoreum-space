@@ -29,10 +29,6 @@ export default async function Home() {
           className="home-hero relative flex h-[28vh] w-full shrink-0 items-center justify-center bg-cover bg-center"
           style={{ backgroundImage: "url(/background.avif)" }}
         >
-          <h1 className="font-script text-center leading-[0.85] text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.45)]">
-            <span className="block text-[clamp(2.75rem,9vw,5.5rem)]">Yeoreum</span>
-            <span className="block text-[clamp(2.75rem,9vw,5.5rem)]">Space</span>
-          </h1>
           <p className="absolute inset-x-0 bottom-0 px-6 pb-8 text-center font-serif text-[10px] italic leading-relaxed text-white/85 drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)] sm:text-[11px]">
             The end of the secret quagmire is a new beginning
             <br />
