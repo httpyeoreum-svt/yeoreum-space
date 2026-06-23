@@ -52,9 +52,14 @@ export async function GenericDetail({
     ? await getItemsByIds(filmMeta.relatedSongIds)
     : [];
   // Curated similars (bidirectional links in item_similars). Games show
-  // "RELATED GAMES", books show "RELATED BOOKS".
-  const hasCuratedSimilars = Boolean(gameMeta) || item.category === "books";
-  const relatedCurated = hasCuratedSimilars
+  // "RELATED GAMES", books "RELATED BOOKS", films "RELATED FILMS".
+  const curatedLabels: Partial<Record<typeof item.category, string>> = {
+    games: "RELATED GAMES",
+    books: "RELATED BOOKS",
+    films: "RELATED FILMS",
+  };
+  const curatedLabel = curatedLabels[item.category];
+  const relatedCurated = curatedLabel
     ? await getCuratedSimilars(item.id)
     : [];
 
@@ -188,7 +193,7 @@ export async function GenericDetail({
           },
           {
             key: "relatedcurated",
-            label: item.category === "books" ? "RELATED BOOKS" : "RELATED GAMES",
+            label: curatedLabel ?? "RELATED",
             content:
               relatedCurated.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
