@@ -105,7 +105,7 @@ export default async function NovelPage({
 
         {/* Rich content from the WYSIWYG editor. Styling via prose helpers. */}
         <div
-          className="post-content mt-6 text-[13px] leading-relaxed text-[color:var(--color-ink)]"
+          className="post-content font-jp-serif mt-6 text-[13px] leading-relaxed text-[color:var(--color-ink)]"
           dangerouslySetInnerHTML={{ __html: novel.content }}
         />
 
