@@ -1,18 +1,10 @@
 import { RecentNovels } from "@/components/recent-novels";
 import { MoodBar } from "@/components/mood-bar";
-import { CategoryGrid } from "@/components/category-grid";
-import { getGridItems } from "@/lib/db/items";
+import { HomePanels } from "@/components/home-panels";
 import { getPublishedNovels } from "@/lib/db/novels";
-import { getCategoryCounts } from "@/lib/db/category-counts";
-import { isAgeVerified } from "@/lib/age-verify";
 
 export default async function Home() {
-  const [novels, grid, counts, ageVerified] = await Promise.all([
-    getPublishedNovels(),
-    getGridItems(6, 8),
-    getCategoryCounts(),
-    isAgeVerified(),
-  ]);
+  const novels = await getPublishedNovels();
   return (
     <>
       {/* 背景画像は一旦オフ。戻すときは下のコメントを解除。
@@ -38,7 +30,7 @@ export default async function Home() {
         <div className="relative z-10 -mt-5 rounded-t-[1.5rem] bg-[color:var(--color-cream)] pt-1">
           <RecentNovels novels={novels} />
           <MoodBar />
-          <CategoryGrid items={grid} counts={counts} ageVerified={ageVerified} />
+          <HomePanels />
         </div>
       </div>
     </>
