@@ -9,7 +9,7 @@ import { OptimizedImage } from "./optimized-image";
  */
 export function RecentNovels({ novels }: { novels: Novel[] }) {
   return (
-    <section className="px-6 pt-4 pb-3 shrink-0">
+    <section className="px-4 pt-4 pb-3 shrink-0">
       <div className="flex items-baseline justify-between mb-3">
         <h2 className="text-[11px] tracking-[0.3em] text-[color:var(--color-ink)]">
           RECENTLY ADDED

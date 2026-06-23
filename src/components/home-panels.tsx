@@ -14,7 +14,7 @@ const PANELS = [
 
 export function HomePanels() {
   return (
-    <section className="px-6 py-4 shrink-0">
+    <section className="px-4 py-4 shrink-0">
       <div className="grid grid-cols-2 gap-0">
         {PANELS.map((p) => (
           <Link
