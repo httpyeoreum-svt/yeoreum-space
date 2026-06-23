@@ -245,11 +245,15 @@ export type Novel = {
   content: string;
   excerpt?: string;
   coverImage?: string;
+  /** Wide banner shown at the top of the novel body. */
+  headerImage?: string;
   status: PostStatus;
   publishedAt?: string;
   tags: string[];
   /** Tagged member names (referencing the members registry). */
   members: string[];
+  /** IDs of related catalog items (typically songs). */
+  relatedItemIds: string[];
   createdAt: string;
   updatedAt: string;
 };
