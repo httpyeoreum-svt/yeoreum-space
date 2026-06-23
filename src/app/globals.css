@@ -208,6 +208,9 @@ body::before {
   margin-bottom: 0.4em;
 }
 .post-content p { line-height: 1.7; }
+/* Empty paragraphs are intentional blank lines from the editor; keep them
+ * visible instead of collapsing to zero height. */
+.post-content p:empty { min-height: 1em; }
 .post-content a {
   color: var(--color-ink);
   text-decoration: underline;
