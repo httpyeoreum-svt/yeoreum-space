@@ -27,7 +27,7 @@ export function RecentNovels({ novels }: { novels: Novel[] }) {
           No novels yet.
         </p>
       ) : (
-        <div className="scroll-x flex gap-4 pb-1 items-start">
+        <div className="scroll-x flex gap-2.5 pb-1 items-start">
           {novels.map((novel, i) => (
             <div
               key={novel.slug}
