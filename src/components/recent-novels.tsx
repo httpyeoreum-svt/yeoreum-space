@@ -28,11 +28,8 @@ export function RecentNovels({ novels }: { novels: Novel[] }) {
         </p>
       ) : (
         <div className="scroll-x flex gap-2.5 pb-1 items-start">
-          {novels.map((novel, i) => (
-            <div
-              key={novel.slug}
-              className={`flex-none w-[110px] ${i >= 6 ? "hidden lg:block" : "block"}`}
-            >
+          {novels.slice(0, 6).map((novel) => (
+            <div key={novel.slug} className="flex-none w-[110px]">
               <NovelCard novel={novel} />
             </div>
           ))}
