@@ -219,6 +219,14 @@ export async function GenericDetail({
                     </div>
                   )}
                 </div>
+              ) : filmMeta && youtubeVideoId(filmMeta.movieUrl) ? (
+                <div>
+                  {filmMeta.movieIsFull && <p className={headingCls}>本編</p>}
+                  <VideoEmbed
+                    url={filmMeta.movieUrl}
+                    title={filmMeta.movieIsFull ? "本編" : "Teaser"}
+                  />
+                </div>
               ) : null,
           },
         ]}
@@ -308,7 +316,7 @@ function FilmInfoBlock({ meta }: { meta: FilmsMeta }) {
   );
 }
 
-/** Film media shown after NOTE: teaser / cast / related songs. */
+/** Film media shown after NOTE: cast / related songs (teaser is a tab). */
 function FilmMediaBlock({
   meta,
   relatedSongs,
@@ -319,18 +327,10 @@ function FilmMediaBlock({
   ageVerified: boolean;
 }) {
   const cast = (meta.cast ?? []).filter((c) => c.role || c.actor);
-  const hasVideo = Boolean(youtubeVideoId(meta.movieUrl));
-  if (!hasVideo && cast.length === 0 && relatedSongs.length === 0) return null;
+  if (cast.length === 0 && relatedSongs.length === 0) return null;
 
   return (
     <div className={sectionCls}>
-      {hasVideo && (
-        <div>
-          {meta.movieIsFull && <p className={headingCls}>本編</p>}
-          <VideoEmbed url={meta.movieUrl} title={meta.movieIsFull ? "本編" : "Teaser"} />
-        </div>
-      )}
-
       {cast.length > 0 && (
         <div>
           <p className={headingCls}>CAST</p>
