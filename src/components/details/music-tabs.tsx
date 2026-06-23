@@ -8,6 +8,7 @@ const TABS = [
   { key: "cover", label: "Cover" },
   { key: "liked", label: "Liked" },
   { key: "similar", label: "Similar" },
+  { key: "films", label: "Films" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -19,6 +20,7 @@ export function MusicTabs({
   cover,
   liked,
   similar,
+  films,
   counts,
 }: {
   /** Pinned above the tab bar (MV + title). Stays fixed while content scrolls. */
@@ -28,9 +30,13 @@ export function MusicTabs({
   cover: ReactNode;
   liked: ReactNode;
   similar: ReactNode;
+  /** "RELATED FILMS" — only rendered (with its tab) when provided. */
+  films?: ReactNode;
   counts?: Partial<Record<TabKey, number>>;
 }) {
   const [tab, setTab] = useState<TabKey>("info");
+  // The Films tab only appears when the song is referenced by a film.
+  const tabs = TABS.filter((t) => t.key !== "films" || films != null);
 
   return (
     <div className="flex flex-col">
@@ -38,7 +44,7 @@ export function MusicTabs({
       <div className="sticky top-0 z-20 -mx-4 px-4 bg-[color:var(--color-cream)]/95 backdrop-blur-sm">
         {header && <div className="flex flex-col gap-4 pt-1 pb-1">{header}</div>}
         <div className="flex border-b border-[color:var(--color-line)]/50">
-        {TABS.map((t) => {
+        {tabs.map((t) => {
           const count = counts?.[t.key] ?? 0;
           return (
             <button
@@ -68,6 +74,7 @@ export function MusicTabs({
         {tab === "cover" && cover}
         {tab === "liked" && liked}
         {tab === "similar" && similar}
+        {tab === "films" && films}
       </div>
     </div>
   );

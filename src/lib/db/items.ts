@@ -103,6 +103,22 @@ export const getRelatedByMood = cache(
   },
 );
 
+/**
+ * Reverse lookup: films whose `relatedSongIds` include this song id.
+ * Lets a music item surface the films that reference it ("RELATED FILMS"),
+ * mirroring the one-directional film → song link without duplicating data.
+ */
+export const getFilmsByRelatedSong = cache(
+  async (songId: string): Promise<Item[]> => {
+    const all = await getAllItems();
+    return all.filter(
+      (i) =>
+        i.meta?.category === "films" &&
+        (i.meta.relatedSongIds?.includes(songId) ?? false),
+    );
+  },
+);
+
 /** Same-category items related by mood — used for "Similar Songs" etc. */
 export const getSimilarInCategory = cache(
   async (item: Item, limit = 5): Promise<Item[]> => {

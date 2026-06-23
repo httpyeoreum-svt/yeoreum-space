@@ -66,10 +66,13 @@ const SPOTIFY_LOGO = (
 export async function MusicDetail({
   item,
   similar,
+  relatedFilms,
   artistSlug,
 }: {
   item: Item;
   similar: Item[];
+  /** Films that reference this song via relatedSongIds (reverse lookup). */
+  relatedFilms: Item[];
   artistSlug?: string;
 }) {
   const [allMoods, allScenes] = await Promise.all([
@@ -114,6 +117,7 @@ export async function MusicDetail({
             cover: hasCover ? 1 : 0,
             liked: meta?.likedBy?.length ?? 0,
             similar: similar.length,
+            films: relatedFilms.length,
           }}
           lyrics={
             hasLyric ? (
@@ -232,6 +236,11 @@ export async function MusicDetail({
                 No similar songs yet.
               </p>
             )
+          }
+          films={
+            relatedFilms.length > 0 ? (
+              <SimilarSongs items={relatedFilms} title="Related Films" hideHeading />
+            ) : undefined
           }
         />
         {hasSamples && (
@@ -380,6 +389,9 @@ export async function MusicDetail({
                 </div>
               )}
             </div>
+          )}
+          {relatedFilms.length > 0 && (
+            <SimilarSongs items={relatedFilms} title="Related Films" />
           )}
         </div>
       </div>
@@ -843,11 +855,19 @@ function InlineMember({ name, avatarUrl }: { name: string; avatarUrl?: string })
   );
 }
 
-function SimilarSongs({ items, hideHeading }: { items: Item[]; hideHeading?: boolean }) {
+function SimilarSongs({
+  items,
+  hideHeading,
+  title = "Similar Songs",
+}: {
+  items: Item[];
+  hideHeading?: boolean;
+  title?: string;
+}) {
   return (
     <section>
       {!hideHeading && (
-        <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">Similar Songs</h3>
+        <h3 className="font-serif text-[20px] text-[color:var(--color-ink)] mb-2">{title}</h3>
       )}
       <ul className="grid grid-cols-2 gap-x-3">
         {items.map((s) => (

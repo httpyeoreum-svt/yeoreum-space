@@ -1,7 +1,7 @@
 import type { Item } from "@/lib/types";
 import { MusicDetail } from "./details/music-detail";
 import { GenericDetail } from "./details/generic-detail";
-import { getCuratedSimilars } from "@/lib/db/items";
+import { getCuratedSimilars, getFilmsByRelatedSong } from "@/lib/db/items";
 
 /**
  * Dispatcher: routes to category-specific detail layouts.
@@ -21,8 +21,18 @@ export async function ItemDetailContent({
   artistSlug?: string;
 }) {
   if (item.category === "music") {
-    const similar = await getCuratedSimilars(item.id);
-    return <MusicDetail item={item} similar={similar} artistSlug={artistSlug} />;
+    const [similar, relatedFilms] = await Promise.all([
+      getCuratedSimilars(item.id),
+      getFilmsByRelatedSong(item.id),
+    ]);
+    return (
+      <MusicDetail
+        item={item}
+        similar={similar}
+        relatedFilms={relatedFilms}
+        artistSlug={artistSlug}
+      />
+    );
   }
   return <GenericDetail item={item} related={related} />;
 }
