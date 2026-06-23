@@ -51,8 +51,12 @@ export async function GenericDetail({
   const relatedSongs = filmMeta?.relatedSongIds?.length
     ? await getItemsByIds(filmMeta.relatedSongIds)
     : [];
-  // Related games are bidirectional links in item_similars (curated similars).
-  const relatedGames = gameMeta ? await getCuratedSimilars(item.id) : [];
+  // Curated similars (bidirectional links in item_similars). Games show
+  // "RELATED GAMES", books show "RELATED BOOKS".
+  const hasCuratedSimilars = Boolean(gameMeta) || item.category === "books";
+  const relatedCurated = hasCuratedSimilars
+    ? await getCuratedSimilars(item.id)
+    : [];
 
   return (
     <article className="flex flex-col">
@@ -183,12 +187,12 @@ export async function GenericDetail({
               ) : null,
           },
           {
-            key: "relatedgames",
-            label: "RELATED GAMES",
+            key: "relatedcurated",
+            label: item.category === "books" ? "RELATED BOOKS" : "RELATED GAMES",
             content:
-              gameMeta && relatedGames.length > 0 ? (
+              relatedCurated.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {relatedGames.map((r) => (
+                  {relatedCurated.map((r) => (
                     <ItemCardSmall
                       key={r.id}
                       item={r}
