@@ -1,10 +1,12 @@
 import type {
+  Category,
   FilmsMeta,
   Item,
   LikedByPerson,
   Member,
   PerfumeMeta,
 } from "@/lib/types";
+import { CATEGORY_META } from "@/lib/types";
 import { getAllMoods } from "@/lib/db/moods";
 import { getMemberMap } from "@/lib/db/members";
 import { getItemsByIds, getCuratedSimilars } from "@/lib/db/items";
@@ -51,17 +53,29 @@ export async function GenericDetail({
   const relatedSongs = filmMeta?.relatedSongIds?.length
     ? await getItemsByIds(filmMeta.relatedSongIds)
     : [];
-  // Curated similars (bidirectional links in item_similars). Games show
-  // "RELATED GAMES", books "RELATED BOOKS", films "RELATED FILMS".
-  const curatedLabels: Partial<Record<typeof item.category, string>> = {
-    games: "RELATED GAMES",
-    books: "RELATED BOOKS",
-    films: "RELATED FILMS",
-  };
-  const curatedLabel = curatedLabels[item.category];
-  const relatedCurated = curatedLabel
+  // Curated similars (bidirectional links in item_similars). Links can cross
+  // categories (e.g. a film linked to a book), so we group the results by
+  // category and render one "RELATED <CATEGORY>" tab per group — the item's own
+  // category first. This keeps a film's related books out of its films tab.
+  const supportsCurated =
+    item.category === "games" ||
+    item.category === "books" ||
+    item.category === "films";
+  const relatedCurated = supportsCurated
     ? await getCuratedSimilars(item.id)
     : [];
+  const curatedOrder: Category[] = [
+    item.category,
+    ...(["films", "books", "games"] as Category[]).filter(
+      (c) => c !== item.category,
+    ),
+  ];
+  const curatedGroups = curatedOrder
+    .map((cat) => ({
+      cat,
+      items: relatedCurated.filter((i) => i.category === cat),
+    }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <article className="flex flex-col">
@@ -191,22 +205,21 @@ export async function GenericDetail({
                 </div>
               ) : null,
           },
-          {
-            key: "relatedcurated",
-            label: curatedLabel ?? "RELATED",
-            content:
-              relatedCurated.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {relatedCurated.map((r) => (
-                    <ItemCardSmall
-                      key={r.id}
-                      item={r}
-                      locked={isItemLocked(r, ageVerified)}
-                    />
-                  ))}
-                </div>
-              ) : null,
-          },
+          ...curatedGroups.map((g) => ({
+            key: `related-${g.cat}`,
+            label: `RELATED ${CATEGORY_META[g.cat].label}`,
+            content: (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {g.items.map((r) => (
+                  <ItemCardSmall
+                    key={r.id}
+                    item={r}
+                    locked={isItemLocked(r, ageVerified)}
+                  />
+                ))}
+              </div>
+            ),
+          })),
           {
             key: "teaser",
             label: "TEASER",
