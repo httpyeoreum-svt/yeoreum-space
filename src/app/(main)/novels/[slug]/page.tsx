@@ -49,14 +49,15 @@ export default async function NovelPage({
               {/* Scrim so the overlaid date / title stay legible. */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
               {novel.tags.length > 0 && (
-                <div className="absolute top-0 right-0 flex max-w-[70%] flex-wrap justify-end gap-x-2.5 gap-y-1 p-3 sm:p-4">
+                <div className="absolute top-0 right-0 z-10 flex max-w-[70%] flex-wrap justify-end gap-x-2.5 gap-y-1 p-3 sm:p-4">
                   {novel.tags.map((t) => (
-                    <span
+                    <Link
                       key={t}
-                      className="text-[10px] tracking-[0.15em] text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)]"
+                      href={`/novels?tag=${encodeURIComponent(t)}`}
+                      className="text-[10px] tracking-[0.15em] text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)] transition hover:text-white hover:underline underline-offset-2"
                     >
                       #{t}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               )}
