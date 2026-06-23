@@ -1,6 +1,5 @@
 import type {
   FilmsMeta,
-  GamesMeta,
   Item,
   LikedByPerson,
   Member,
@@ -153,13 +152,72 @@ export async function GenericDetail({
             key: "moods",
             label: "MOODS",
             content:
-              moodObjs.length > 0 ? (
-                <div className="flex flex-nowrap gap-1.5 overflow-x-auto scroll-x">
-                  {moodObjs.map((m) => (
-                    <div key={m.slug} className="shrink-0">
-                      <MoodChip mood={m} size="sm" href={`/moods/${m.slug}`} />
+              moodObjs.length > 0 || related.length > 0 ? (
+                <div className="flex flex-col gap-5">
+                  {moodObjs.length > 0 && (
+                    <div className="flex flex-nowrap gap-1.5 overflow-x-auto scroll-x">
+                      {moodObjs.map((m) => (
+                        <div key={m.slug} className="shrink-0">
+                          <MoodChip mood={m} size="sm" href={`/moods/${m.slug}`} />
+                        </div>
+                      ))}
                     </div>
+                  )}
+                  {related.length > 0 && (
+                    <div>
+                      <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-3">
+                        IN THE SAME MOOD
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {related.slice(0, 3).map((r) => (
+                          <ItemCardSmall
+                            key={r.id}
+                            item={r}
+                            locked={isItemLocked(r, ageVerified)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : null,
+          },
+          {
+            key: "relatedgames",
+            label: "RELATED GAMES",
+            content:
+              gameMeta && relatedGames.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {relatedGames.map((r) => (
+                    <ItemCardSmall
+                      key={r.id}
+                      item={r}
+                      locked={isItemLocked(r, ageVerified)}
+                    />
                   ))}
+                </div>
+              ) : null,
+          },
+          {
+            key: "teaser",
+            label: "TEASER",
+            content:
+              gameMeta &&
+              (youtubeVideoId(gameMeta.movieUrl) ||
+                youtubeVideoId(gameMeta.relatedVideoUrl)) ? (
+                <div className="flex flex-col gap-5">
+                  {youtubeVideoId(gameMeta.movieUrl) && (
+                    <VideoEmbed url={gameMeta.movieUrl} title="Teaser" />
+                  )}
+                  {youtubeVideoId(gameMeta.relatedVideoUrl) && (
+                    <div>
+                      <p className={headingCls}>RELATED VIDEO</p>
+                      <VideoEmbed
+                        url={gameMeta.relatedVideoUrl}
+                        title="Related video"
+                      />
+                    </div>
+                  )}
                 </div>
               ) : null,
           },
@@ -173,14 +231,6 @@ export async function GenericDetail({
           ageVerified={ageVerified}
         />
       )}
-      {gameMeta && (
-        <GameMediaBlock
-          meta={gameMeta}
-          relatedGames={relatedGames}
-          ageVerified={ageVerified}
-        />
-      )}
-
       {item.meta?.category === "perfume" && item.meta.purchaseUrl && (
         <div className="px-4 sm:px-6 md:px-8 pb-7 pt-3">
           <a
@@ -194,23 +244,6 @@ export async function GenericDetail({
           </a>
         </div>
       )}
-
-      {related.length > 0 && (
-        <div className="px-4 sm:px-6 md:px-8 pt-5 pb-7 border-t border-[color:var(--color-line)]/40 bg-[color:var(--color-cream-soft)]/40">
-          <p className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-muted)] mb-3">
-            IN THE SAME MOOD
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {related.slice(0, 3).map((r) => (
-              <ItemCardSmall
-                key={r.id}
-                item={r}
-                locked={isItemLocked(r, ageVerified)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
     </article>
   );
 }
@@ -222,9 +255,6 @@ function formatRelease(s: string): string {
 
 const sectionCls =
   "px-4 sm:px-6 md:px-8 pb-6 pt-5 border-t border-dashed border-[color:var(--color-paper-edge)] mx-4 sm:mx-6 md:mx-8 flex flex-col gap-5";
-/** Same as sectionCls but without the dashed top divider (used for media blocks). */
-const mediaSectionCls =
-  "px-4 sm:px-6 md:px-8 pb-6 pt-2 mx-4 sm:mx-6 md:mx-8 flex flex-col gap-5";
 const headingCls =
   "text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2";
 
@@ -293,7 +323,7 @@ function FilmMediaBlock({
   if (!hasVideo && cast.length === 0 && relatedSongs.length === 0) return null;
 
   return (
-    <div className={mediaSectionCls}>
+    <div className={sectionCls}>
       {hasVideo && (
         <div>
           {meta.movieIsFull && <p className={headingCls}>本編</p>}
@@ -341,48 +371,6 @@ function FilmMediaBlock({
 }
 
 /** Game media shown after NOTE: teaser / related video / related games. */
-function GameMediaBlock({
-  meta,
-  relatedGames,
-  ageVerified,
-}: {
-  meta: GamesMeta;
-  relatedGames: Item[];
-  ageVerified: boolean;
-}) {
-  const hasTeaser = Boolean(youtubeVideoId(meta.movieUrl));
-  const hasRelatedVideo = Boolean(youtubeVideoId(meta.relatedVideoUrl));
-  if (!hasTeaser && !hasRelatedVideo && relatedGames.length === 0) return null;
-
-  return (
-    <div className={mediaSectionCls}>
-      {hasTeaser && <VideoEmbed url={meta.movieUrl} title="Teaser" />}
-
-      {hasRelatedVideo && (
-        <div>
-          <p className={headingCls}>RELATED VIDEO</p>
-          <VideoEmbed url={meta.relatedVideoUrl} title="Related video" />
-        </div>
-      )}
-
-      {relatedGames.length > 0 && (
-        <div>
-          <p className={headingCls}>RELATED GAMES</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {relatedGames.map((r) => (
-              <ItemCardSmall
-                key={r.id}
-                item={r}
-                locked={isItemLocked(r, ageVerified)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function PerfumeMetaBlock({ meta }: { meta: PerfumeMeta }) {
   const stages: { label: string; notes: string[] }[] = (
     [
