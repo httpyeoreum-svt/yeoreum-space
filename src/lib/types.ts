@@ -154,6 +154,18 @@ export type FilmsMeta = {
   director?: string;
   year?: number;
   runtime?: number;
+  genre?: string;
+  country?: string;
+  /** Release date as written. Accepts yyyy or yyyy-mm-dd. */
+  releaseDate?: string;
+  /** Teaser / trailer movie URL (YouTube etc.). */
+  movieUrl?: string;
+  /** True when movieUrl is the full film (本編), not just a teaser. */
+  movieIsFull?: boolean;
+  /** Item ids of related songs (music items) attached to this film. */
+  relatedSongIds?: string[];
+  /** Featured cast — role name (役名) + actor's real name (本名). */
+  cast?: { role?: string; actor?: string }[];
   /** Members who like / recommend this film. */
   likedBy?: LikedByPerson[];
   /** Group header for likedBy, e.g. "SEVENTEEN". */
@@ -186,6 +198,16 @@ export type GamesMeta = {
   category: "games";
   platform?: string;
   genre?: string;
+  /** Release date as written. Accepts yyyy or yyyy-mm-dd. */
+  releaseDate?: string;
+  /** Teaser / trailer movie URL (YouTube etc.). */
+  movieUrl?: string;
+  /** Related video URL (gameplay / review / etc.). */
+  relatedVideoUrl?: string;
+  /** Members who like / recommend this game. */
+  likedBy?: LikedByPerson[];
+  /** Group header for likedBy, e.g. "SEVENTEEN". */
+  likedByGroup?: string;
 };
 
 export type ItemMeta = MusicMeta | BooksMeta | FilmsMeta | PerfumeMeta | GamesMeta;

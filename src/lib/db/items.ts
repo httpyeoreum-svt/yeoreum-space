@@ -116,6 +116,28 @@ export const getSimilarInCategory = cache(
  * `item_similars` table. Links are bidirectional (each pair stored twice),
  * so we just look up `where item_id = X`. Returns [] if no curated links exist.
  */
+/** Fetch items by id, preserving the order of `ids` (missing ids dropped). */
+export const getItemsByIds = cache(
+  unstable_cache(
+    async (ids: string[]): Promise<Item[]> => {
+      const clean = ids.filter(Boolean);
+      if (clean.length === 0) return [];
+      const supabase = createAnonClient();
+      const { data, error } = await supabase
+        .from("items")
+        .select(ITEM_SELECT)
+        .in("id", clean);
+      if (error) throw error;
+      const byId = new Map((data ?? []).map((r) => [r.id as string, rowToItem(r)]));
+      return clean
+        .map((id) => byId.get(id))
+        .filter((x): x is Item => Boolean(x));
+    },
+    ["items-by-ids"],
+    { revalidate: ITEMS_REVALIDATE, tags: [ITEMS_TAG] },
+  ),
+);
+
 export const getCuratedSimilars = cache(
   unstable_cache(
     async (itemId: string): Promise<Item[]> => {
