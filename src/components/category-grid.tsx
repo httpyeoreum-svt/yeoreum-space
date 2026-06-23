@@ -22,12 +22,18 @@ const SORT_LABELS: Record<SortKey, string> = {
   genre: "GENRE",
 };
 
-/** Production year as a number (releaseDate, then legacy year). 0 when unknown. */
-function filmYear(i: Item): number {
-  if (i.meta?.category !== "films") return 0;
-  const d = i.meta.releaseDate?.trim();
-  if (d) return parseInt(d.slice(0, 4), 10) || 0;
-  return i.meta.year ?? 0;
+/**
+ * Production / publication year (releaseDate, then legacy year). 0 when unknown.
+ * Films and books both carry these fields.
+ */
+function itemYear(i: Item): number {
+  const m = i.meta;
+  if (m?.category === "films" || m?.category === "books") {
+    const d = m.releaseDate?.trim();
+    if (d) return parseInt(d.slice(0, 4), 10) || 0;
+    return m.year ?? 0;
+  }
+  return 0;
 }
 /** Runtime in minutes; Infinity when unknown so it sorts last ascending. */
 function filmRuntime(i: Item): number {
@@ -40,10 +46,13 @@ function filmCountry(i: Item): string {
   const c = i.meta?.category === "films" ? i.meta.country?.trim() : "";
   return c || "￿";
 }
-/** Genre; unknown → high sentinel so it sorts last alphabetically. */
-function filmGenre(i: Item): string {
-  const g = i.meta?.category === "films" ? i.meta.genre?.trim() : "";
-  return g || "￿";
+/** Genre; unknown → high sentinel so it sorts last. Films and books both have it. */
+function itemGenre(i: Item): string {
+  const m = i.meta;
+  if (m?.category === "films" || m?.category === "books") {
+    return m.genre?.trim() || "￿";
+  }
+  return "￿";
 }
 
 const TABS: { key: Tab; label: string }[] = [
@@ -70,11 +79,13 @@ export function CategoryGrid({
   const [sortOpen, setSortOpen] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
-  // Year / runtime / country only make sense for films.
+  // Films expose the full set; books add year / genre; others stay minimal.
   const sortOptions: SortKey[] =
     active === "films"
       ? ["recent", "title", "year", "runtime", "country", "genre"]
-      : ["recent", "title"];
+      : active === "books"
+        ? ["recent", "title", "year", "genre"]
+        : ["recent", "title"];
   const effectiveSort: SortKey = sortOptions.includes(sort) ? sort : "recent";
 
   useEffect(() => {
@@ -96,7 +107,7 @@ export function CategoryGrid({
         arr.sort((a, b) => a.title.localeCompare(b.title));
         break;
       case "year":
-        arr.sort((a, b) => filmYear(b) - filmYear(a));
+        arr.sort((a, b) => itemYear(b) - itemYear(a));
         break;
       case "runtime":
         arr.sort((a, b) => filmRuntime(a) - filmRuntime(b));
@@ -105,7 +116,7 @@ export function CategoryGrid({
         arr.sort((a, b) => filmCountry(a).localeCompare(filmCountry(b)));
         break;
       case "genre":
-        arr.sort((a, b) => filmGenre(a).localeCompare(filmGenre(b)));
+        arr.sort((a, b) => itemGenre(a).localeCompare(itemGenre(b)));
         break;
       // "recent": keep the addedAt-desc order from getAllItems.
     }
