@@ -48,6 +48,18 @@ export default async function NovelPage({
               />
               {/* Scrim so the overlaid date / title stay legible. */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent" />
+              {novel.tags.length > 0 && (
+                <div className="absolute top-0 right-0 flex max-w-[70%] flex-wrap justify-end gap-x-2.5 gap-y-1 p-3 sm:p-4">
+                  {novel.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[10px] tracking-[0.15em] text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)]"
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
                 {novel.publishedAt && (
                   <p className="mb-2 text-[10px] tracking-[0.25em] text-white/85">
@@ -59,18 +71,11 @@ export default async function NovelPage({
                 </h1>
               </div>
             </div>
-            {(novel.tags.length > 0 || novel.excerpt) && (
+            {novel.excerpt && (
               <header className="pt-4 pb-6 border-b border-[color:var(--color-line)]/30">
-                {novel.tags.length > 0 && (
-                  <div className="mb-2 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">
-                    {novel.tags.join(" / ")}
-                  </div>
-                )}
-                {novel.excerpt && (
-                  <p className="text-[14px] sm:text-[16px] text-[color:var(--color-ink-muted)] leading-relaxed">
-                    {novel.excerpt}
-                  </p>
-                )}
+                <p className="text-[14px] sm:text-[16px] text-[color:var(--color-ink-muted)] leading-relaxed">
+                  {novel.excerpt}
+                </p>
               </header>
             )}
           </>
@@ -104,8 +109,10 @@ export default async function NovelPage({
           dangerouslySetInnerHTML={{ __html: novel.content }}
         />
 
+        {(memberMap || relatedItems.length > 0) && (
+        <div className="mt-10 pt-6 border-t border-[color:var(--color-line)]/30 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-8">
         {memberMap && (
-          <section className="mt-10 pt-6 border-t border-[color:var(--color-line)]/30">
+          <section>
             <p className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-3">
               MEMBERS
             </p>
@@ -135,7 +142,7 @@ export default async function NovelPage({
         )}
 
         {relatedItems.length > 0 && (
-          <section className="mt-10 pt-6 border-t border-[color:var(--color-line)]/30">
+          <section>
             <p className="text-[10px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-3">
               RELATED
             </p>
@@ -175,6 +182,8 @@ export default async function NovelPage({
               ))}
             </ul>
           </section>
+        )}
+        </div>
         )}
       </article>
     </div>
