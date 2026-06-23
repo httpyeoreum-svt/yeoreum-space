@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { LayoutGrid, List, ChevronDown } from "lucide-react";
 import type { Item, Category } from "@/lib/types";
@@ -11,6 +11,40 @@ import { CategoryLabel } from "./category-label";
 import { isItemLocked } from "@/lib/item-lock";
 
 type Tab = "all" | Category;
+
+type SortKey = "recent" | "title" | "year" | "runtime" | "country" | "genre";
+const SORT_LABELS: Record<SortKey, string> = {
+  recent: "RECENT",
+  title: "TITLE",
+  year: "YEAR",
+  runtime: "RUNTIME",
+  country: "COUNTRY",
+  genre: "GENRE",
+};
+
+/** Production year as a number (releaseDate, then legacy year). 0 when unknown. */
+function filmYear(i: Item): number {
+  if (i.meta?.category !== "films") return 0;
+  const d = i.meta.releaseDate?.trim();
+  if (d) return parseInt(d.slice(0, 4), 10) || 0;
+  return i.meta.year ?? 0;
+}
+/** Runtime in minutes; Infinity when unknown so it sorts last ascending. */
+function filmRuntime(i: Item): number {
+  return i.meta?.category === "films" && typeof i.meta.runtime === "number"
+    ? i.meta.runtime
+    : Infinity;
+}
+/** Country name; unknown → high sentinel so it sorts last alphabetically. */
+function filmCountry(i: Item): string {
+  const c = i.meta?.category === "films" ? i.meta.country?.trim() : "";
+  return c || "￿";
+}
+/** Genre; unknown → high sentinel so it sorts last alphabetically. */
+function filmGenre(i: Item): string {
+  const g = i.meta?.category === "films" ? i.meta.genre?.trim() : "";
+  return g || "￿";
+}
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "all",     label: "ALL" },
@@ -32,9 +66,51 @@ export function CategoryGrid({
 }) {
   const [active, setActive] = useState<Tab>("all");
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [sort, setSort] = useState<SortKey>("recent");
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  // Year / runtime / country only make sense for films.
+  const sortOptions: SortKey[] =
+    active === "films"
+      ? ["recent", "title", "year", "runtime", "country", "genre"]
+      : ["recent", "title"];
+  const effectiveSort: SortKey = sortOptions.includes(sort) ? sort : "recent";
+
+  useEffect(() => {
+    if (!sortOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (!sortRef.current?.contains(e.target as Node)) setSortOpen(false);
+    };
+    window.addEventListener("mousedown", onClick);
+    return () => window.removeEventListener("mousedown", onClick);
+  }, [sortOpen]);
 
   const filtered =
     active === "all" ? items : items.filter((i) => i.category === active);
+
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    switch (effectiveSort) {
+      case "title":
+        arr.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "year":
+        arr.sort((a, b) => filmYear(b) - filmYear(a));
+        break;
+      case "runtime":
+        arr.sort((a, b) => filmRuntime(a) - filmRuntime(b));
+        break;
+      case "country":
+        arr.sort((a, b) => filmCountry(a).localeCompare(filmCountry(b)));
+        break;
+      case "genre":
+        arr.sort((a, b) => filmGenre(a).localeCompare(filmGenre(b)));
+        break;
+      // "recent": keep the addedAt-desc order from getAllItems.
+    }
+    return arr;
+  }, [filtered, effectiveSort]);
 
   return (
     <section className="px-6 pt-3 pb-5">
@@ -61,11 +137,40 @@ export function CategoryGrid({
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 text-[9px] tracking-[0.25em] text-[color:var(--color-ink-muted)]">
-            SORT
-            <span className="text-[color:var(--color-ink)]">RECENT</span>
-            <ChevronDown size={11} strokeWidth={1.5} />
-          </button>
+          <div className="relative" ref={sortRef}>
+            <button
+              type="button"
+              onClick={() => setSortOpen((o) => !o)}
+              className="flex items-center gap-2 text-[9px] tracking-[0.25em] text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)] transition"
+            >
+              SORT
+              <span className="text-[color:var(--color-ink)]">
+                {SORT_LABELS[effectiveSort]}
+              </span>
+              <ChevronDown size={11} strokeWidth={1.5} />
+            </button>
+            {sortOpen && (
+              <div className="absolute right-0 top-full mt-1.5 z-20 min-w-[8rem] bg-[color:var(--color-paper)] border border-[color:var(--color-line)]/60 shadow-sm">
+                {sortOptions.map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => {
+                      setSort(key);
+                      setSortOpen(false);
+                    }}
+                    className={`block w-full text-left px-3 py-2 text-[10px] tracking-[0.2em] transition ${
+                      effectiveSort === key
+                        ? "text-[color:var(--color-ink)] bg-[color:var(--color-cream-soft)]"
+                        : "text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)] hover:bg-[color:var(--color-cream-soft)]/60"
+                    }`}
+                  >
+                    {SORT_LABELS[key]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex items-center border border-[color:var(--color-line)]/50">
             <button
               onClick={() => setView("grid")}
@@ -96,7 +201,7 @@ export function CategoryGrid({
       <div className="bg-[color:var(--color-cream-soft)]/50 border border-[color:var(--color-line)]/40 p-4">
         {view === "grid" ? (
           <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
-            {filtered.map((item) => (
+            {sorted.map((item) => (
               <ItemCardSmall
                 key={item.id}
                 item={item}
@@ -106,7 +211,7 @@ export function CategoryGrid({
           </div>
         ) : (
           <ul className="flex flex-col divide-y divide-[color:var(--color-line)]/30">
-            {filtered.map((item) => {
+            {sorted.map((item) => {
               const locked = isItemLocked(item, ageVerified);
               return (
                 <li key={item.id}>
