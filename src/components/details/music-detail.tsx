@@ -12,6 +12,7 @@ import { getAllScenes } from "@/lib/db/scenes";
 import { getMemberMap } from "@/lib/db/members";
 import { ImagePlaceholder } from "../image-placeholder";
 import { OptimizedImage } from "../optimized-image";
+import { AvatarCircle } from "../avatar-circle";
 import { MoodChip } from "../mood-chip";
 import { formatCardDate } from "@/lib/format";
 import { flagFromCountryName } from "@/lib/country";
@@ -697,18 +698,9 @@ function LikedBy({
 }
 
 function Avatar({ person, avatarUrl }: { person: LikedByPerson; avatarUrl?: string }) {
-  const initials = person.name.slice(0, 2).toUpperCase();
   return (
     <div className="flex flex-col items-center gap-2 w-24">
-      <div className="relative w-20 h-20 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
-        {avatarUrl ? (
-          <OptimizedImage src={avatarUrl} sizes="80px" />
-        ) : (
-          <span className="font-serif text-[16px] tracking-wide text-[color:var(--color-ink-muted)]">
-            {initials}
-          </span>
-        )}
-      </div>
+      <AvatarCircle name={person.name} avatarUrl={avatarUrl} size="lg" />
       <p className="text-[12px] tracking-wide text-[color:var(--color-ink)] text-center">{person.name}</p>
     </div>
   );
@@ -795,18 +787,9 @@ function CoverSection({
 
 /** Circular avatar (image or initials fallback) + name, inline next to the Cover heading. */
 function InlineMember({ name, avatarUrl }: { name: string; avatarUrl?: string }) {
-  const initials = name.slice(0, 2).toUpperCase();
   return (
     <div className="flex items-center gap-2">
-      <div className="relative w-10 h-10 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
-        {avatarUrl ? (
-          <OptimizedImage src={avatarUrl} sizes="40px" />
-        ) : (
-          <span className="font-serif text-[12px] tracking-wide text-[color:var(--color-ink-muted)]">
-            {initials}
-          </span>
-        )}
-      </div>
+      <AvatarCircle name={name} avatarUrl={avatarUrl} size="sm" />
       <span className="text-[14px] text-[color:var(--color-ink)]">{name}</span>
     </div>
   );

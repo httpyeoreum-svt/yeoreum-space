@@ -11,7 +11,7 @@ import { getAllMoods } from "@/lib/db/moods";
 import { getMemberMap } from "@/lib/db/members";
 import { getItemsByIds, getCuratedSimilars } from "@/lib/db/items";
 import { ImagePlaceholder } from "../image-placeholder";
-import { OptimizedImage } from "../optimized-image";
+import { AvatarCircle } from "../avatar-circle";
 import { MoodChip } from "../mood-chip";
 import { ItemCardSmall } from "../item-card-small";
 import { DetailTabs } from "./detail-tabs";
@@ -522,18 +522,9 @@ function LikedByGrid({
     <div className="flex flex-wrap items-start gap-x-4 gap-y-3">
       {ordered.map((p) => {
         const avatarUrl = p.avatarUrl ?? memberMap.get(p.name)?.avatarUrl;
-        const initials = p.name.slice(0, 2).toUpperCase();
         return (
           <div key={p.name} className="flex flex-col items-center gap-1.5 w-16">
-            <div className="relative w-14 h-14 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
-              {avatarUrl ? (
-                <OptimizedImage src={avatarUrl} sizes="56px" />
-              ) : (
-                <span className="font-serif text-[13px] tracking-wide text-[color:var(--color-ink-muted)]">
-                  {initials}
-                </span>
-              )}
-            </div>
+            <AvatarCircle name={p.name} avatarUrl={avatarUrl} size="md" />
             <p className="text-[11px] tracking-wide text-[color:var(--color-ink)] text-center">
               {p.name}
             </p>

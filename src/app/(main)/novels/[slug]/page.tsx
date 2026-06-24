@@ -6,6 +6,7 @@ import { getMemberMap } from "@/lib/db/members";
 import { getItemById } from "@/lib/db/items";
 import { formatCardDate } from "@/lib/format";
 import { OptimizedImage } from "@/components/optimized-image";
+import { AvatarCircle } from "@/components/avatar-circle";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { CategoryLabel } from "@/components/category-label";
 import type { Item } from "@/lib/types";
@@ -120,18 +121,9 @@ export default async function NovelPage({
             <div className="flex flex-wrap items-start gap-x-4 gap-y-3">
               {novel.members.map((name) => {
                 const avatarUrl = memberMap.get(name)?.avatarUrl;
-                const initials = name.slice(0, 2).toUpperCase();
                 return (
                   <div key={name} className="flex flex-col items-center gap-1.5 w-16">
-                    <div className="relative w-14 h-14 rounded-full bg-[color:var(--color-cream-deep)] border border-[color:var(--color-line)] flex items-center justify-center overflow-hidden">
-                      {avatarUrl ? (
-                        <OptimizedImage src={avatarUrl} sizes="56px" />
-                      ) : (
-                        <span className="font-serif text-[13px] tracking-wide text-[color:var(--color-ink-muted)]">
-                          {initials}
-                        </span>
-                      )}
-                    </div>
+                    <AvatarCircle name={name} avatarUrl={avatarUrl} size="md" />
                     <p className="text-[11px] tracking-wide text-[color:var(--color-ink)] text-center">
                       {name}
                     </p>
