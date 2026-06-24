@@ -9,7 +9,9 @@ const PANELS = [
   { key: "music", label: "MUSIC", href: "/collection?cat=music" },
   { key: "books", label: "BOOKS", href: "/collection?cat=books" },
   { key: "game", label: "GAME", href: "/collection?cat=games" },
-  { key: "camera", label: "CAMERA", href: "/collection?cat=films" },
+  // CAMERA: dedicated "camerafilm" section is coming; points to the full
+  // collection until that route exists.
+  { key: "camera", label: "CAMERA", href: "/collection" },
 ] as const;
 
 export function HomePanels() {
