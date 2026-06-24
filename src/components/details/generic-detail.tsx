@@ -17,6 +17,7 @@ import { ItemCardSmall } from "../item-card-small";
 import { DetailTabs } from "./detail-tabs";
 import { YouTubeEmbed } from "../youtube-embed";
 import { youtubeVideoId } from "@/lib/youtube";
+import { flagFromCountryName } from "@/lib/country";
 import { TAG_PILL_CLS } from "@/lib/ui";
 import { isAgeVerified } from "@/lib/age-verify";
 import { isItemLocked } from "@/lib/item-lock";
@@ -120,12 +121,13 @@ export async function GenericDetail({
           </p>
         )}
         <p className="mt-2 text-xs text-[color:var(--color-ink-muted)]">{item.creator}</p>
-        {releaseDate && (
+        {/* Films show release / genre inside the 2×2 info block below. */}
+        {releaseDate && item.category !== "films" && (
           <p className="mt-3 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">
             RELEASE&nbsp;&nbsp;{formatRelease(releaseDate)}
           </p>
         )}
-        {genre && (
+        {genre && item.category !== "films" && (
           <p className="mt-1.5 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">
             GENRE&nbsp;&nbsp;<span className="tracking-[0.05em]">{genre}</span>
           </p>
@@ -191,7 +193,7 @@ export async function GenericDetail({
           },
           {
             key: "liked",
-            label: item.category === "games" ? "RELATED" : "LIKED BY",
+            label: item.category === "games" ? "RELATED" : "LIKED",
             content:
               hasLikedBy && memberMap ? (
                 <div>
@@ -313,34 +315,34 @@ const sectionCls =
 const headingCls =
   "text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2";
 
-/** Small "label: value" info chips row used by film / game meta. */
-function InfoChips({ items }: { items: { label: string; value: string }[] }) {
-  const rows = items.filter((i) => i.value);
-  if (rows.length === 0) return null;
-  return (
-    <dl className="flex flex-wrap gap-x-6 gap-y-2">
-      {rows.map((r) => (
-        <div key={r.label} className="flex flex-col gap-0.5">
-          <dt className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
-            {r.label}
-          </dt>
-          <dd className="text-[13px] text-[color:var(--color-ink)]">{r.value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-/** Film info shown before NOTE: country / runtime (genre is in the header). */
+/** Film info shown before NOTE — a 2×2 grid: release / country, genre / runtime. */
 function FilmInfoBlock({ meta }: { meta: FilmsMeta }) {
+  const country = meta.country?.trim();
+  const flag = country ? flagFromCountryName(country) : "";
   const info = [
-    { label: "COUNTRY", value: meta.country ?? "" },
+    { label: "RELEASE", value: meta.releaseDate ? formatRelease(meta.releaseDate) : "" },
+    {
+      label: "COUNTRY",
+      value: country ? (flag ? `${flag} ${country}` : country) : "",
+    },
+    { label: "GENRE", value: meta.genre?.trim() ?? "" },
     { label: "RUNTIME", value: meta.runtime ? `${meta.runtime} min` : "" },
   ];
   if (!info.some((i) => i.value)) return null;
   return (
     <div className={sectionCls}>
-      <InfoChips items={info} />
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
+        {info.map((r) => (
+          <div key={r.label} className="flex flex-col gap-0.5">
+            <dt className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+              {r.label}
+            </dt>
+            <dd className="text-[13px] text-[color:var(--color-ink)]">
+              {r.value || "—"}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
 }
