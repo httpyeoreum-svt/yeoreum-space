@@ -64,6 +64,35 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "games",   label: "GAMES" },
 ];
 
+/**
+ * Estimated card height in "column-width" units, for masonry balancing:
+ * cover aspect ratio (height / width) plus a constant for the header + title.
+ */
+function estCardHeight(item: Item): number {
+  const cover =
+    item.category === "games"
+      ? 9 / 16
+      : item.category === "films" || item.category === "books"
+        ? 4 / 3
+        : 1;
+  return cover + 0.5;
+}
+
+/** Active column count, matching the Tailwind breakpoints used for the grid. */
+function useColumnCount(): number {
+  const [cols, setCols] = useState(2);
+  useEffect(() => {
+    const compute = () => {
+      const w = window.innerWidth;
+      setCols(w >= 1280 ? 8 : w >= 1024 ? 4 : w >= 768 ? 3 : 2);
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
+  return cols;
+}
+
 export function CategoryGrid({
   items,
   counts,
@@ -125,6 +154,25 @@ export function CategoryGrid({
     }
     return arr;
   }, [filtered, effectiveSort]);
+
+  // Masonry: distribute cards into the active number of columns, each card going
+  // to the currently shortest column (source order preserved) so a short card
+  // (e.g. a 16:9 game) lets the next card rise beneath it instead of leaving a
+  // gap. Heights are estimated from each category's cover aspect ratio.
+  const cols = useColumnCount();
+  const columns = useMemo(() => {
+    const buckets = Array.from({ length: cols }, () => ({
+      items: [] as Item[],
+      h: 0,
+    }));
+    for (const item of sorted) {
+      let shortest = buckets[0];
+      for (const b of buckets) if (b.h < shortest.h) shortest = b;
+      shortest.items.push(item);
+      shortest.h += estCardHeight(item);
+    }
+    return buckets.map((b) => b.items);
+  }, [sorted, cols]);
 
   return (
     <section className="px-6 pt-3 pb-5">
@@ -214,13 +262,17 @@ export function CategoryGrid({
 
       <div className="bg-[color:var(--color-cream-soft)]/50 border border-[color:var(--color-line)]/40 p-4">
         {view === "grid" ? (
-          <div className="grid items-start gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
-            {sorted.map((item) => (
-              <ItemCardSmall
-                key={item.id}
-                item={item}
-                locked={isItemLocked(item, ageVerified)}
-              />
+          <div className="flex items-start gap-3 sm:gap-4">
+            {columns.map((col, i) => (
+              <div key={i} className="flex flex-1 min-w-0 flex-col gap-3 sm:gap-4">
+                {col.map((item) => (
+                  <ItemCardSmall
+                    key={item.id}
+                    item={item}
+                    locked={isItemLocked(item, ageVerified)}
+                  />
+                ))}
+              </div>
             ))}
           </div>
         ) : (
