@@ -17,6 +17,7 @@ import { ItemCardSmall } from "../item-card-small";
 import { DetailTabs } from "./detail-tabs";
 import { YouTubeEmbed } from "../youtube-embed";
 import { youtubeVideoId } from "@/lib/youtube";
+import { TAG_PILL_CLS } from "@/lib/ui";
 import { isAgeVerified } from "@/lib/age-verify";
 import { isItemLocked } from "@/lib/item-lock";
 
@@ -442,7 +443,7 @@ function PerfumeMetaBlock({ meta }: { meta: PerfumeMeta }) {
             {meta.moods!.map((m) => (
               <span
                 key={m}
-                className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                className={TAG_PILL_CLS}
               >
                 {m}
               </span>
@@ -473,7 +474,7 @@ function PerfumeMetaBlock({ meta }: { meta: PerfumeMeta }) {
                   {s.notes.map((n) => (
                     <span
                       key={n}
-                      className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                      className={TAG_PILL_CLS}
                     >
                       {n}
                     </span>
@@ -494,7 +495,7 @@ function PerfumeMetaBlock({ meta }: { meta: PerfumeMeta }) {
             {legacyNotes.map((n) => (
               <span
                 key={n}
-                className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                className={TAG_PILL_CLS}
               >
                 {n}
               </span>

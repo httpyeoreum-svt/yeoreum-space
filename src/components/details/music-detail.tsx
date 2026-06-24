@@ -18,6 +18,7 @@ import { formatCardDate } from "@/lib/format";
 import { flagFromCountryName } from "@/lib/country";
 import { youtubeVideoId } from "@/lib/youtube";
 import { withAlpha } from "@/lib/color";
+import { TAG_PILL_CLS } from "@/lib/ui";
 import { YouTubeEmbed } from "../youtube-embed";
 import { MusicTabs } from "./music-tabs";
 import { LyricsTabs } from "./lyrics-tabs";
@@ -142,7 +143,7 @@ export async function MusicDetail({
                     .map((tag, i) => (
                       <span
                         key={`${tag}-${i}`}
-                        className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                        className={TAG_PILL_CLS}
                       >
                         #{tag}
                       </span>
@@ -163,7 +164,7 @@ export async function MusicDetail({
                       .map((tag, i) => (
                         <span
                           key={`${tag}-${i}`}
-                          className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)] shrink-0"
+                          className={`${TAG_PILL_CLS} shrink-0`}
                         >
                           #{tag}
                         </span>
@@ -192,7 +193,7 @@ export async function MusicDetail({
                     {sceneObjs.map((s) => (
                       <span
                         key={s.slug}
-                        className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                        className={TAG_PILL_CLS}
                       >
                         {s.label}
                       </span>
@@ -309,7 +310,7 @@ export async function MusicDetail({
                 {sceneObjs.map((s) => (
                   <span
                     key={s.slug}
-                    className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                    className={TAG_PILL_CLS}
                   >
                     {s.label}
                   </span>
@@ -329,7 +330,7 @@ export async function MusicDetail({
                 .map((tag, i) => (
                   <span
                     key={`${tag}-${i}`}
-                    className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+                    className={TAG_PILL_CLS}
                   >
                     #{tag}
                   </span>
@@ -357,7 +358,7 @@ export async function MusicDetail({
                   .map((tag, i) => (
                     <span
                       key={`${tag}-${i}`}
-                      className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)] shrink-0"
+                      className={`${TAG_PILL_CLS} shrink-0`}
                     >
                       #{tag}
                     </span>
@@ -620,7 +621,7 @@ function GenreSection({ genre }: { genre: string }) {
         {tags.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
-            className="inline-flex items-center rounded-full border border-[color:var(--color-line)]/60 bg-[color:var(--color-paper)] px-2.5 py-0.5 text-[11px] text-[color:var(--color-ink-muted)]"
+            className={TAG_PILL_CLS}
           >
             #{tag}
           </span>
