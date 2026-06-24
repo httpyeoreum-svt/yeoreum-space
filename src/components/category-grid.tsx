@@ -68,12 +68,15 @@ export function CategoryGrid({
   items,
   counts,
   ageVerified,
+  initialTab = "all",
 }: {
   items: Item[];
   counts: CategoryCounts;
   ageVerified: boolean;
+  /** Tab selected on first render (e.g. from the home panels' ?cat= link). */
+  initialTab?: Tab;
 }) {
-  const [active, setActive] = useState<Tab>("all");
+  const [active, setActive] = useState<Tab>(initialTab);
   const [view, setView] = useState<"grid" | "list">("grid");
   const [sort, setSort] = useState<SortKey>("recent");
   const [sortOpen, setSortOpen] = useState(false);

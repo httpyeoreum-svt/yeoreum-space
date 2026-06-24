@@ -6,10 +6,10 @@ import Link from "next/link";
  * overlaid; missing images fall back to a cream block so nothing breaks.
  */
 const PANELS = [
-  { key: "music", label: "MUSIC", href: "/collection" },
-  { key: "books", label: "BOOKS", href: "/collection" },
-  { key: "game", label: "GAME", href: "/collection" },
-  { key: "camera", label: "CAMERA", href: "/collection" },
+  { key: "music", label: "MUSIC", href: "/collection?cat=music" },
+  { key: "books", label: "BOOKS", href: "/collection?cat=books" },
+  { key: "game", label: "GAME", href: "/collection?cat=games" },
+  { key: "camera", label: "CAMERA", href: "/collection?cat=films" },
 ] as const;
 
 export function HomePanels() {

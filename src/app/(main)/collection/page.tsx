@@ -2,8 +2,16 @@ import { CategoryGrid } from "@/components/category-grid";
 import { getAllItems } from "@/lib/db/items";
 import { getCategoryCounts } from "@/lib/db/category-counts";
 import { isAgeVerified } from "@/lib/age-verify";
+import { CATEGORY_META, type Category } from "@/lib/types";
 
-export default async function CollectionPage() {
+export default async function CollectionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cat?: string }>;
+}) {
+  const { cat } = await searchParams;
+  const initialTab =
+    cat && cat in CATEGORY_META ? (cat as Category) : "all";
   const [items, counts, ageVerified] = await Promise.all([
     getAllItems(),
     getCategoryCounts(),
@@ -22,7 +30,12 @@ export default async function CollectionPage() {
           {items.length} entries across music, books, films, perfume, and games. Filter, sort, or scan.
         </p>
       </header>
-      <CategoryGrid items={items} counts={counts} ageVerified={ageVerified} />
+      <CategoryGrid
+        items={items}
+        counts={counts}
+        ageVerified={ageVerified}
+        initialTab={initialTab}
+      />
     </div>
   );
 }
