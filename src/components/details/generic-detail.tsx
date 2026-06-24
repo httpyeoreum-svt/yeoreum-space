@@ -146,15 +146,46 @@ export async function GenericDetail({
                 : item.category === "perfume"
                   ? "紹介"
                   : "ABOUT",
-            content: item.note ? (
-              <p className="font-serif text-[11px] leading-relaxed text-[color:var(--color-ink)]">
-                {item.category === "perfume" ? (
-                  item.note
-                ) : (
-                  <>&ldquo;{item.note}&rdquo;</>
-                )}
-              </p>
-            ) : null,
+            // Films embed their teaser / 本編 (and related video) here — there is
+            // no separate TEASER tab for films; the story and footage live together.
+            content: (() => {
+              const note = item.note ? (
+                <p className="font-serif text-[11px] leading-relaxed text-[color:var(--color-ink)]">
+                  {item.category === "perfume" ? (
+                    item.note
+                  ) : (
+                    <>&ldquo;{item.note}&rdquo;</>
+                  )}
+                </p>
+              ) : null;
+              if (!filmMeta) return note;
+              const hasMovie = youtubeVideoId(filmMeta.movieUrl);
+              const hasRelatedVideo = youtubeVideoId(filmMeta.relatedVideoUrl);
+              if (!note && !hasMovie && !hasRelatedVideo) return null;
+              return (
+                <div className="flex flex-col gap-5">
+                  {hasMovie && (
+                    <div>
+                      {filmMeta.movieIsFull && <p className={headingCls}>本編</p>}
+                      <VideoEmbed
+                        url={filmMeta.movieUrl}
+                        title={filmMeta.movieIsFull ? "本編" : "Teaser"}
+                      />
+                    </div>
+                  )}
+                  {note}
+                  {hasRelatedVideo && (
+                    <div>
+                      <p className={headingCls}>RELATED VIDEO</p>
+                      <VideoEmbed
+                        url={filmMeta.relatedVideoUrl}
+                        title="Related video"
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })(),
           },
           {
             key: "liked",
@@ -236,29 +267,6 @@ export async function GenericDetail({
                       <p className={headingCls}>RELATED VIDEO</p>
                       <VideoEmbed
                         url={gameMeta.relatedVideoUrl}
-                        title="Related video"
-                      />
-                    </div>
-                  )}
-                </div>
-              ) : filmMeta &&
-                (youtubeVideoId(filmMeta.movieUrl) ||
-                  youtubeVideoId(filmMeta.relatedVideoUrl)) ? (
-                <div className="flex flex-col gap-5">
-                  {youtubeVideoId(filmMeta.movieUrl) && (
-                    <div>
-                      {filmMeta.movieIsFull && <p className={headingCls}>本編</p>}
-                      <VideoEmbed
-                        url={filmMeta.movieUrl}
-                        title={filmMeta.movieIsFull ? "本編" : "Teaser"}
-                      />
-                    </div>
-                  )}
-                  {youtubeVideoId(filmMeta.relatedVideoUrl) && (
-                    <div>
-                      <p className={headingCls}>RELATED VIDEO</p>
-                      <VideoEmbed
-                        url={filmMeta.relatedVideoUrl}
                         title="Related video"
                       />
                     </div>
