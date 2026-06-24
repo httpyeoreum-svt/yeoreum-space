@@ -3,6 +3,7 @@ import { Lock } from "lucide-react";
 import type { Item } from "@/lib/types";
 import { ImagePlaceholder } from "./image-placeholder";
 import { CategoryLabel } from "./category-label";
+import { cardAspectClass } from "@/lib/ui";
 
 /**
  * Small "collectible" card used in the lower category grid.
@@ -24,9 +25,7 @@ export function ItemCardSmall({ item, locked }: { item: Item; locked?: boolean }
         <CategoryLabel category={item.category} className="!text-[7px] !tracking-[0.15em]" />
       </header>
       <div
-        className={`${
-          item.category === "books" ? "aspect-[3/4]" : "aspect-square"
-        } w-full overflow-hidden relative`}
+        className={`${cardAspectClass(item.category)} w-full overflow-hidden relative`}
       >
         <div className={locked ? "w-full h-full blur-xl scale-110" : "w-full h-full"}>
           <ImagePlaceholder category={item.category} id={item.id} imageUrl={item.imageUrl} />
