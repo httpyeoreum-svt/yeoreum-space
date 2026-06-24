@@ -15,6 +15,7 @@ import { OptimizedImage } from "../optimized-image";
 import { MoodChip } from "../mood-chip";
 import { ItemCardSmall } from "../item-card-small";
 import { DetailTabs } from "./detail-tabs";
+import { YouTubeEmbed } from "../youtube-embed";
 import { youtubeVideoId } from "@/lib/youtube";
 import { isAgeVerified } from "@/lib/age-verify";
 import { isItemLocked } from "@/lib/item-lock";
@@ -167,7 +168,7 @@ export async function GenericDetail({
                   {hasMovie && (
                     <div>
                       {filmMeta.movieIsFull && <p className={headingCls}>本編</p>}
-                      <VideoEmbed
+                      <YouTubeEmbed
                         url={filmMeta.movieUrl}
                         title={filmMeta.movieIsFull ? "本編" : "Teaser"}
                       />
@@ -177,7 +178,7 @@ export async function GenericDetail({
                   {hasRelatedVideo && (
                     <div>
                       <p className={headingCls}>RELATED VIDEO</p>
-                      <VideoEmbed
+                      <YouTubeEmbed
                         url={filmMeta.relatedVideoUrl}
                         title="Related video"
                       />
@@ -260,12 +261,12 @@ export async function GenericDetail({
                 youtubeVideoId(gameMeta.relatedVideoUrl)) ? (
                 <div className="flex flex-col gap-5">
                   {youtubeVideoId(gameMeta.movieUrl) && (
-                    <VideoEmbed url={gameMeta.movieUrl} title="Teaser" />
+                    <YouTubeEmbed url={gameMeta.movieUrl} title="Teaser" />
                   )}
                   {youtubeVideoId(gameMeta.relatedVideoUrl) && (
                     <div>
                       <p className={headingCls}>RELATED VIDEO</p>
-                      <VideoEmbed
+                      <YouTubeEmbed
                         url={gameMeta.relatedVideoUrl}
                         title="Related video"
                       />
@@ -310,24 +311,6 @@ const sectionCls =
   "px-4 sm:px-6 md:px-8 pb-6 pt-5 border-t border-dashed border-[color:var(--color-paper-edge)] mx-4 sm:mx-6 md:mx-8 flex flex-col gap-5";
 const headingCls =
   "text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-2";
-
-/** A YouTube teaser/trailer embed. Renders nothing for non-YouTube URLs. */
-function VideoEmbed({ url, title }: { url?: string; title: string }) {
-  const id = youtubeVideoId(url);
-  if (!id) return null;
-  return (
-    <div className="aspect-video w-full bg-black overflow-hidden border border-[color:var(--color-paper-edge)]">
-      <iframe
-        src={`https://www.youtube.com/embed/${id}?rel=0&playsinline=1`}
-        title={title}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        referrerPolicy="strict-origin-when-cross-origin"
-        className="w-full h-full"
-      />
-    </div>
-  );
-}
 
 /** Small "label: value" info chips row used by film / game meta. */
 function InfoChips({ items }: { items: { label: string; value: string }[] }) {

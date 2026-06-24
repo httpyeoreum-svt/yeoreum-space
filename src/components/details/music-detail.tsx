@@ -16,6 +16,8 @@ import { MoodChip } from "../mood-chip";
 import { formatCardDate } from "@/lib/format";
 import { flagFromCountryName } from "@/lib/country";
 import { youtubeVideoId } from "@/lib/youtube";
+import { withAlpha } from "@/lib/color";
+import { YouTubeEmbed } from "../youtube-embed";
 import { MusicTabs } from "./music-tabs";
 import { LyricsTabs } from "./lyrics-tabs";
 
@@ -109,7 +111,7 @@ export async function MusicDetail({
         <MusicTabs
           header={
             <>
-              <YouTubeEmbed url={meta?.mvUrl} title={item.title} color={meta?.color} />
+              <YouTubeEmbed url={meta?.mvUrl} title={`${item.title} — MV`} tintColor={meta?.color} />
               <TitleBlock item={item} meta={meta} artistSlug={artistSlug} />
             </>
           }
@@ -275,7 +277,7 @@ export async function MusicDetail({
           YouTube keeps its original 1fr width. Cover sits in col 3 above the Title block. */}
       <div className="grid grid-cols-1 @[920px]:grid-cols-[1fr_260px_1fr] gap-5 items-start px-4 sm:px-6 md:px-8 pt-2 pb-6">
         <div className="min-w-0 order-1">
-          <YouTubeEmbed url={meta?.mvUrl} title={item.title} color={meta?.color} />
+          <YouTubeEmbed url={meta?.mvUrl} title={`${item.title} — MV`} tintColor={meta?.color} />
         </div>
         <div className="flex flex-col gap-3 min-w-0 max-w-[260px] w-full mx-auto @[920px]:mx-0 order-3 @[920px]:order-2">
           <div className="aspect-square w-full overflow-hidden hidden @[920px]:block">
@@ -625,51 +627,6 @@ function GenreSection({ genre }: { genre: string }) {
       </div>
     </section>
   );
-}
-
-/**
- * Top-of-page YouTube iframe. Renders nothing if the URL isn't a recognizable
- * YouTube link, so songs without an MV simply don't take any vertical space.
- */
-function YouTubeEmbed({
-  url,
-  title,
-  color,
-}: {
-  url?: string;
-  title: string;
-  color?: string;
-}) {
-  const id = youtubeVideoId(url);
-  if (!id) return null;
-  const tint = color ? withAlpha(color, 0.35) : null;
-  return (
-    <div
-      className="w-full overflow-hidden border border-[color:var(--color-paper-edge)]"
-      style={tint ? { backgroundColor: tint, padding: "10px" } : undefined}
-    >
-      <div className="aspect-video w-full bg-black overflow-hidden">
-        <iframe
-          src={`https://www.youtube.com/embed/${id}?rel=0&playsinline=1`}
-          title={`${title} — MV`}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-          className="w-full h-full"
-        />
-      </div>
-    </div>
-  );
-}
-
-/** Append an alpha channel to a "#rrggbb" hex. Falls back to the input if not a valid hex. */
-function withAlpha(hex: string, alpha: number): string {
-  const m = /^#([0-9a-fA-F]{6})$/.exec(hex.trim());
-  if (!m) return hex;
-  const a = Math.round(Math.max(0, Math.min(1, alpha)) * 255)
-    .toString(16)
-    .padStart(2, "0");
-  return `#${m[1]}${a}`;
 }
 
 function LikedBy({
