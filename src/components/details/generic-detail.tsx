@@ -56,6 +56,7 @@ export async function GenericDetail({
   const relatedSongs = filmMeta?.relatedSongIds?.length
     ? await getItemsByIds(filmMeta.relatedSongIds)
     : [];
+  const cast = (filmMeta?.cast ?? []).filter((c) => c.role || c.actor);
   // Curated similars (bidirectional links in item_similars). Links can cross
   // categories (e.g. a film linked to a book), so we group the results by
   // category and render one "RELATED <CATEGORY>" tab per group — the item's own
@@ -82,63 +83,93 @@ export async function GenericDetail({
 
   return (
     <article className="flex flex-col">
-      <div className="px-4 sm:px-6 md:px-8">
-        {item.category === "games" && item.imageUrl ? (
-          // Games: show the image at its original aspect ratio (no crop).
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.imageUrl}
-            alt=""
-            className="w-full max-w-[480px] h-auto border border-[color:var(--color-paper-edge)]"
-          />
-        ) : (
-          <div
-            className={`${
-              item.category === "perfume"
-                ? "aspect-square max-w-[480px]"
-                : item.category === "games"
-                  ? "aspect-video max-w-[480px]"
-                  : "aspect-[3/4] max-w-[420px]"
-            } w-full overflow-hidden border border-[color:var(--color-paper-edge)]`}
-          >
-            <ImagePlaceholder
-              category={item.category}
-              id={item.id}
-              imageUrl={item.imageUrl}
-              sizes="(max-width: 640px) 100vw, 480px"
-            />
+      {filmMeta ? (
+        // Films: compact image (≈1/3) with title + director beside it; the
+        // release / country / genre / runtime block starts below the image.
+        <>
+          <div className="px-4 sm:px-6 md:px-8 pt-1 flex gap-4 items-start">
+            <div className="w-1/3 max-w-[150px] shrink-0 aspect-[3/4] overflow-hidden border border-[color:var(--color-paper-edge)]">
+              <ImagePlaceholder
+                category={item.category}
+                id={item.id}
+                imageUrl={item.imageUrl}
+                sizes="150px"
+              />
+            </div>
+            <div className="flex-1 min-w-0 pt-1">
+              <h2 className="font-serif text-[24px] sm:text-[30px] leading-tight tracking-tight text-[color:var(--color-ink)] break-words">
+                {item.title}
+              </h2>
+              {item.titleSub && item.titleSubPublic && (
+                <p className="font-serif text-[15px] sm:text-[18px] text-[color:var(--color-ink-muted)] mt-1 break-words">
+                  {item.titleSub}
+                </p>
+              )}
+              <p className="mt-2 text-xs text-[color:var(--color-ink-muted)]">
+                {item.creator}
+              </p>
+            </div>
           </div>
-        )}
-      </div>
+          <FilmInfoBlock meta={filmMeta} />
+        </>
+      ) : (
+        <>
+          <div className="px-4 sm:px-6 md:px-8">
+            {item.category === "games" && item.imageUrl ? (
+              // Games: show the image at its original aspect ratio (no crop).
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={item.imageUrl}
+                alt=""
+                className="w-full max-w-[480px] h-auto border border-[color:var(--color-paper-edge)]"
+              />
+            ) : (
+              <div
+                className={`${
+                  item.category === "perfume"
+                    ? "aspect-square max-w-[480px]"
+                    : item.category === "games"
+                      ? "aspect-video max-w-[480px]"
+                      : "aspect-[3/4] max-w-[420px]"
+                } w-full overflow-hidden border border-[color:var(--color-paper-edge)]`}
+              >
+                <ImagePlaceholder
+                  category={item.category}
+                  id={item.id}
+                  imageUrl={item.imageUrl}
+                  sizes="(max-width: 640px) 100vw, 480px"
+                />
+              </div>
+            )}
+          </div>
 
-      <div className="px-4 sm:px-6 md:px-8 pt-5 pb-4">
-        <h2 className="font-serif text-[28px] sm:text-[34px] leading-none tracking-tight text-[color:var(--color-ink)] break-words">
-          {item.title}
-        </h2>
-        {item.titleSub && item.titleSubPublic && (
-          <p className="font-serif text-[16px] sm:text-[20px] text-[color:var(--color-ink-muted)] mt-1 break-words">
-            {item.titleSub}
-          </p>
-        )}
-        <p className="mt-2 text-xs text-[color:var(--color-ink-muted)]">{item.creator}</p>
-        {/* Films show release / genre inside the 2×2 info block below. */}
-        {releaseDate && item.category !== "films" && (
-          <p className="mt-3 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">
-            RELEASE&nbsp;&nbsp;{formatRelease(releaseDate)}
-          </p>
-        )}
-        {genre && item.category !== "films" && (
-          <p className="mt-1.5 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">
-            GENRE&nbsp;&nbsp;<span className="tracking-[0.05em]">{genre}</span>
-          </p>
-        )}
-      </div>
+          <div className="px-4 sm:px-6 md:px-8 pt-5 pb-4">
+            <h2 className="font-serif text-[28px] sm:text-[34px] leading-none tracking-tight text-[color:var(--color-ink)] break-words">
+              {item.title}
+            </h2>
+            {item.titleSub && item.titleSubPublic && (
+              <p className="font-serif text-[16px] sm:text-[20px] text-[color:var(--color-ink-muted)] mt-1 break-words">
+                {item.titleSub}
+              </p>
+            )}
+            <p className="mt-2 text-xs text-[color:var(--color-ink-muted)]">{item.creator}</p>
+            {releaseDate && (
+              <p className="mt-3 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">
+                RELEASE&nbsp;&nbsp;{formatRelease(releaseDate)}
+              </p>
+            )}
+            {genre && (
+              <p className="mt-1.5 text-[10px] tracking-[0.25em] text-[color:var(--color-ink-soft)]">
+                GENRE&nbsp;&nbsp;<span className="tracking-[0.05em]">{genre}</span>
+              </p>
+            )}
+          </div>
+        </>
+      )}
 
       {item.meta?.category === "perfume" && (
         <PerfumeMetaBlock meta={item.meta} />
       )}
-
-      {filmMeta && <FilmInfoBlock meta={filmMeta} />}
 
       <DetailTabs
         tabs={[
@@ -240,6 +271,44 @@ export async function GenericDetail({
                 </div>
               ) : null,
           },
+          {
+            key: "cast",
+            label: "CAST",
+            content:
+              filmMeta && cast.length > 0 ? (
+                <ul className="flex flex-col gap-2">
+                  {cast.map((c, i) => (
+                    <li
+                      key={i}
+                      className="grid grid-cols-[1fr_1fr] gap-3 items-baseline"
+                    >
+                      <span className="text-[14px] text-[color:var(--color-ink)]">
+                        {c.actor || "—"}
+                      </span>
+                      <span className="text-[12px] text-[color:var(--color-ink-muted)]">
+                        {c.role || ""}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null,
+          },
+          {
+            key: "songs",
+            label: "SONGS",
+            content:
+              filmMeta && relatedSongs.length > 0 ? (
+                <div className="grid items-start grid-cols-2 sm:grid-cols-3 gap-3">
+                  {relatedSongs.map((r) => (
+                    <ItemCardSmall
+                      key={r.id}
+                      item={r}
+                      locked={isItemLocked(r, ageVerified)}
+                    />
+                  ))}
+                </div>
+              ) : null,
+          },
           ...curatedGroups.map((g) => ({
             key: `related-${g.cat}`,
             label: `RELATED ${CATEGORY_META[g.cat].label}`,
@@ -281,13 +350,6 @@ export async function GenericDetail({
         ]}
       />
 
-      {filmMeta && (
-        <FilmMediaBlock
-          meta={filmMeta}
-          relatedSongs={relatedSongs}
-          ageVerified={ageVerified}
-        />
-      )}
       {item.meta?.category === "perfume" && item.meta.purchaseUrl && (
         <div className="px-4 sm:px-6 md:px-8 pb-7 pt-3">
           <a
@@ -331,13 +393,13 @@ function FilmInfoBlock({ meta }: { meta: FilmsMeta }) {
   if (!info.some((i) => i.value)) return null;
   return (
     <div className={sectionCls}>
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-3">
         {info.map((r) => (
-          <div key={r.label} className="flex flex-col gap-0.5">
-            <dt className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)]">
+          <div key={r.label} className="flex items-baseline gap-2 text-[12px] min-w-0">
+            <dt className="text-[9px] tracking-[0.25em] text-[color:var(--color-ink-soft)] shrink-0">
               {r.label}
             </dt>
-            <dd className="text-[13px] text-[color:var(--color-ink)]">
+            <dd className="text-[color:var(--color-ink)] truncate">
               {r.value || "—"}
             </dd>
           </div>
@@ -347,61 +409,6 @@ function FilmInfoBlock({ meta }: { meta: FilmsMeta }) {
   );
 }
 
-/** Film media shown after NOTE: cast / related songs (teaser is a tab). */
-function FilmMediaBlock({
-  meta,
-  relatedSongs,
-  ageVerified,
-}: {
-  meta: FilmsMeta;
-  relatedSongs: Item[];
-  ageVerified: boolean;
-}) {
-  const cast = (meta.cast ?? []).filter((c) => c.role || c.actor);
-  if (cast.length === 0 && relatedSongs.length === 0) return null;
-
-  return (
-    <div className={sectionCls}>
-      {cast.length > 0 && (
-        <div>
-          <p className={headingCls}>CAST</p>
-          <ul className="flex flex-col gap-2">
-            {cast.map((c, i) => (
-              <li
-                key={i}
-                className="grid grid-cols-[1fr_1fr] gap-3 items-baseline"
-              >
-                <span className="text-[14px] text-[color:var(--color-ink)]">
-                  {c.actor || "—"}
-                </span>
-                <span className="text-[12px] text-[color:var(--color-ink-muted)]">
-                  {c.role ? `as ${c.role}` : ""}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {relatedSongs.length > 0 && (
-        <div>
-          <p className={headingCls}>RELATED SONGS</p>
-          <div className="grid items-start grid-cols-2 sm:grid-cols-3 gap-3">
-            {relatedSongs.map((r) => (
-              <ItemCardSmall
-                key={r.id}
-                item={r}
-                locked={isItemLocked(r, ageVerified)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** Game media shown after NOTE: teaser / related video / related games. */
 function PerfumeMetaBlock({ meta }: { meta: PerfumeMeta }) {
   const stages: { label: string; notes: string[] }[] = (
     [
