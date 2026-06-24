@@ -214,7 +214,7 @@ export function CategoryGrid({
 
       <div className="bg-[color:var(--color-cream-soft)]/50 border border-[color:var(--color-line)]/40 p-4">
         {view === "grid" ? (
-          <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
+          <div className="grid items-start gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
             {sorted.map((item) => (
               <ItemCardSmall
                 key={item.id}

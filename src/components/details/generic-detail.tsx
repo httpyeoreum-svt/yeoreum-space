@@ -224,7 +224,7 @@ export async function GenericDetail({
                       <p className="text-[9px] tracking-[0.3em] text-[color:var(--color-ink-soft)] mb-3">
                         IN THE SAME MOOD
                       </p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="grid items-start grid-cols-2 sm:grid-cols-3 gap-3">
                         {related.slice(0, 3).map((r) => (
                           <ItemCardSmall
                             key={r.id}
@@ -242,7 +242,7 @@ export async function GenericDetail({
             key: `related-${g.cat}`,
             label: `RELATED ${CATEGORY_META[g.cat].label}`,
             content: (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid items-start grid-cols-2 sm:grid-cols-3 gap-3">
                 {g.items.map((r) => (
                   <ItemCardSmall
                     key={r.id}
@@ -384,7 +384,7 @@ function FilmMediaBlock({
       {relatedSongs.length > 0 && (
         <div>
           <p className={headingCls}>RELATED SONGS</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid items-start grid-cols-2 sm:grid-cols-3 gap-3">
             {relatedSongs.map((r) => (
               <ItemCardSmall
                 key={r.id}
