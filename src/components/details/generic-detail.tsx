@@ -241,13 +241,28 @@ export async function GenericDetail({
                     </div>
                   )}
                 </div>
-              ) : filmMeta && youtubeVideoId(filmMeta.movieUrl) ? (
-                <div>
-                  {filmMeta.movieIsFull && <p className={headingCls}>本編</p>}
-                  <VideoEmbed
-                    url={filmMeta.movieUrl}
-                    title={filmMeta.movieIsFull ? "本編" : "Teaser"}
-                  />
+              ) : filmMeta &&
+                (youtubeVideoId(filmMeta.movieUrl) ||
+                  youtubeVideoId(filmMeta.relatedVideoUrl)) ? (
+                <div className="flex flex-col gap-5">
+                  {youtubeVideoId(filmMeta.movieUrl) && (
+                    <div>
+                      {filmMeta.movieIsFull && <p className={headingCls}>本編</p>}
+                      <VideoEmbed
+                        url={filmMeta.movieUrl}
+                        title={filmMeta.movieIsFull ? "本編" : "Teaser"}
+                      />
+                    </div>
+                  )}
+                  {youtubeVideoId(filmMeta.relatedVideoUrl) && (
+                    <div>
+                      <p className={headingCls}>RELATED VIDEO</p>
+                      <VideoEmbed
+                        url={filmMeta.relatedVideoUrl}
+                        title="Related video"
+                      />
+                    </div>
+                  )}
                 </div>
               ) : null,
           },

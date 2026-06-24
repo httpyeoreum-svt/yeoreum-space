@@ -162,6 +162,8 @@ export type FilmsMeta = {
   movieUrl?: string;
   /** True when movieUrl is the full film (本編), not just a teaser. */
   movieIsFull?: boolean;
+  /** Related video URL (interview / behind-the-scenes / etc.). */
+  relatedVideoUrl?: string;
   /** Item ids of related songs (music items) attached to this film. */
   relatedSongIds?: string[];
   /** Featured cast — role name (役名) + actor's real name (本名). */
