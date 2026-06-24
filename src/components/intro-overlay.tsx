@@ -21,8 +21,19 @@ export function IntroOverlay() {
   useEffect(() => {
     // Always show the intro on every visit.
     setShow(true);
-    document.documentElement.style.overflow = "hidden";
   }, []);
+
+  // Lock page scroll only while the overlay is shown. Cleanup guarantees the
+  // lock is released even if the component unmounts (HMR / navigation) without
+  // a dismiss — otherwise `html` stays overflow:hidden and the page (esp. once
+  // DevTools narrows the viewport out of the app-shell mode) can't scroll.
+  useEffect(() => {
+    if (!show) return;
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = "";
+    };
+  }, [show]);
 
   const dismiss = useCallback(() => {
     setLeaving(true);
@@ -32,7 +43,6 @@ export function IntroOverlay() {
       /* private mode — fine, shows again next load */
     }
     window.setTimeout(() => {
-      document.documentElement.style.overflow = "";
       setShow(false);
     }, FADE_MS);
   }, []);
