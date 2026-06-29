@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "preview": "next build && next start -p 5998",
+    "gen:nt-doc": "tsx scripts/gen-night-train-doc.mts",
     "lint": "eslint"
   },
   "dependencies": {
