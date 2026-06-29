@@ -10,6 +10,7 @@ import {
   NotebookText,
   BookText,
   ListOrdered,
+  VenetianMask,
   Info,
   Sun,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const NAV = [
   { label: "JOURNAL",    icon: NotebookText,        href: "/journal" },
   { label: "NOVELS",     icon: BookText,            href: "/novels" },
   { label: "LISTS",      icon: ListOrdered,         href: "/lists" },
+  { label: "MYSTERY",    icon: VenetianMask,        href: "/murder-mystery" },
   { label: "ABOUT",      icon: Info,                href: "/about" },
 ];
 
